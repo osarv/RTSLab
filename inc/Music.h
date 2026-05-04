@@ -5,14 +5,13 @@
 
 typedef struct {
   Object super;
-  int mute;
   int volume;
   int tempo;
   int key;
 } Music;
 
 #define initMusic()                                                              \
-  { initObject(), 0, 0, 120, 0 }
+  { initObject(), 0, 120, 0 }
 
 void MusicPlayBJ(Music* self, int unused);
 void MusicIncreaseVolume(Music* self, int unused);

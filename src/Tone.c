@@ -23,10 +23,18 @@ void ToneSetPeriod(Tone* self, int period) {
 void ToneSetAmplitude(Tone* self, int ampl) {
   self->amplitude = ampl;
   char buf[100];
-  snprintf(buf, 100, "volume is %d us\n", ampl);
+  snprintf(buf, 100, "volume is %d\n", ampl);
   SCI_WRITE(&sci0, buf);
 }
 
-void ToneToggle(Tone* self, int unused) {
+void ToneToggleRunning(Tone* self, int unused) {
   self->running ^= 1;
+}
+
+void ToneToggleMute(Tone* self, int unused) {
+  self->mute ^= 1;
+  char buf[100];
+  if (self->mute) snprintf(buf, 100, "mute\n");
+  else snprintf(buf, 100, "unmute\n");
+  SCI_WRITE(&sci0, buf);
 }

@@ -17,25 +17,29 @@ const NoteLen noteLens[] = {QUARTER, QUARTER, QUARTER, QUARTER, QUARTER, QUARTER
 
 void MusicSetTempo(Music* self, int tempo) {
     self->tempo = tempo;
+    char buf[100];
+    else snprintf(buf, 100, "new tempo: &d\n", tempo);
+    SCI_WRITE(&sci0, buf);
 }
 
 void MusicSetKey(Music* self, int key) {
     self->key = key;
+    char buf[100];
+    else snprintf(buf, 100, "new key: &d\n", key);
+    SCI_WRITE(&sci0, buf);
 }
 
 #define WAIT_OVER_BPM 50 * 100 * 120
 void MusicPlayNote(Music* self, int noteIdx) {
     SYNC(&tone, ToneSetPeriod, periods[notes[noteIdx + key]]);
-    SYNC(&tone, ToneToggle, ARG_UNUSED);
     int noteLen noteLens[noteIdx];
     int sendPlayNoteBLine = noteLen / self->tempo;
     int sendPauseNoteBLine = (noteLen  - WAIT_MS_OVER BPM) / self->tempo;
+    if (!self->mute) {
+        SYNC(&tone, ToneToggle, ARG_UNUSED);
+        SEND(sendPauseNoteBLine, sendPlayNoteBLine, &tone, ToneToggle, noteIdx);
+    }
     SEND(sendPlayNoteBLine, 2 * sendPlayNoteBLine, self, MusicPlayNothing, noteIdx);
-    SEND(sendPauseNoteBLine, sendPlayNoteBLine, self, MusicPlayNothing, noteIdx);
-}
-
-void MusicPauseNote() {
-
 }
 
 #define MAX_VOL 15
@@ -50,11 +54,7 @@ void MusicDecreaseVolume(Music* self, int unused) {
 }
 
 void MusicMuteUnmute(Music* self, int unused) {
-    self->mute ^= 1;
-    char buf[100];
-    if (self->mute) snprintf(buf, 100, "mute");
-    else snprintf(buf, 100, "unmute");
-    SCI_WRITE(&sci0, buf);
+    SYNC(&tone, ToneToggleMute, ARG_UNUSED);
 }
 
 void MusicPlayBJ(Musc* self, int unused) {
