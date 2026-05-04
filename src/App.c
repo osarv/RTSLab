@@ -1,6 +1,5 @@
 #include "App.h"
 #include "Tone.h"
-#include "Load.h"
 #include "TinyTimber.h"
 #include "canTinyTimber.h"
 #include "sciTinyTimber.h"
@@ -10,7 +9,6 @@
 
 #define ARG_UNUSED 0
 extern App app;
-extern Load load;
 extern Tone tone;
 extern Music music;
 extern Can can0;
@@ -43,16 +41,9 @@ void printTempo(int tempo){
 
 void reader(App* self, int c) {
   switch (c) {
-    //case ',': SYNC(&load, LoadIncrease, ARG_UNUSED); break;
-    //case '.': SYNC(&load, LoadDecrease, ARG_UNUSED); break;
-    case '+': SYNC(&tone, ToneIncreaseAmplitude, ARG_UNUSED); break;
-    case '-': SYNC(&tone, ToneDecreaseAmplitude, ARG_UNUSED); break;
-    case 'm': SYNC(&tone, ToneToggle, ARG_UNUSED); break;
-    /*case 'd':
-      SYNC(&tone, ToneToggleDeadline, ARG_UNUSED);
-      SYNC(&load, LoadToggleDeadline, ARG_UNUSED);
-      break;
-    */  
+    case '+': SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
+    case '-': SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
+    case 'm': SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
     case '0': self->buf[self->len] = c; self->len++; break;
     case '1': self->buf[self->len] = c; self->len++; break;
     case '2': self->buf[self->len] = c; self->len++; break;
@@ -110,7 +101,6 @@ void startApp(App *self, int arg) {
 
   SYNC(&tone, ToneSetPeriod, USEC(500));
   ASYNC(&tone, ToneGenerate, ARG_UNUSED);
-  ASYNC(&load, LoadRun, ARG_UNUSED);
 }
 
 int main() {
