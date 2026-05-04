@@ -72,7 +72,7 @@ void reader(App* self, int c) {
         break;
       }
       else {
-        SCI_WRITE(&sci0, "Input key not allowed");
+        SCI_WRITE(&sci0, "Input key not allowed! >:(");
         break;
       }
     case 't':
@@ -84,7 +84,7 @@ void reader(App* self, int c) {
         break;
       }
       else {
-        SCI_WRITE(&sci0, "Input tempo not allowed");
+        SCI_WRITE(&sci0, "Input tempo not allowed! >:(");
         break;
       } 
   }
