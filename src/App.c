@@ -32,6 +32,13 @@ void printKeyAndPeriods(int key) {
   SCI_WRITECHAR(&sci0, '\n');
 }
 
+void printTempo(int tempo){
+  char buf[10];
+  snprintf(buf, 10, "Tempo: %d\n", tempo);
+  SCI_WRITE(&sci0, buf);
+  SCI_WRITECHAR(&sci0, '\n');
+}
+
 void reader(App* self, int c) {
   switch (c) {
     //case ',': SYNC(&load, LoadIncrease, ARG_UNUSED); break;
@@ -54,13 +61,33 @@ void reader(App* self, int c) {
     case '7': self->buf[self->len] = c; self->len++; break;
     case '8': self->buf[self->len] = c; self->len++; break;
     case '9': self->buf[self->len] = c; self->len++; break;
-    case 'e':
+    case 'k':
       self->buf[self->len] = '\0';
       int key = atoi(self->buf);
       self->len = 0;
-      printKeyAndPeriods(key);
-      break;
+      if (key <= 5 || key >= -5) {
+        ASYNC(&music, MusicSetKey, key);
+        printKeyAndPeriods(key);
+        break;
+      }
+      else {
+        SCI_WRITE(&sci0, "Input key not allowed");
+        break;
+      }
     }
+    case 't':
+      self->buf[self->len] = '\0';
+      int tempo = atoi(self->buf);
+      self->len = 0;
+      if (tempo <= 240 || tempo >= 60){
+        ASYNC(&music, MusicSetTempo, tempo);
+        printTempo(tempo);
+        break;
+      }
+      else {
+        SCI_WRITE(&sci0, "Input tempo not allowed");
+        break;
+      }
       */
   }
 }
