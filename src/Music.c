@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "Tone.h"
 #include "tinyTimber.h"
+#include "sciTinyTimber.h"
 
 #define ARG_UNUSED 0
 typdef enum {
@@ -25,16 +26,36 @@ void MusicSetKey(Music* self, int key) {
 #define WAIT_OVER_BPM 50 * 100 * 120
 void MusicPlayNote(Music* self, int noteIdx) {
     SYNC(&tone, ToneSetPeriod, periods[notes[noteIdx + key]]);
-    SYNC(&tone, ToneEnable, ARG_UNUSED);
-    AFTER((noteLens[noteIdx] - WAIT_MS_OVER_BPM) / self->tempo, self, MusicPlayNothing, noteIdx);
+    SYNC(&tone, ToneToggle, ARG_UNUSED);
+    int noteLen noteLens[noteIdx];
+    int sendPlayNoteBLine = noteLen / self->tempo;
+    int sendPauseNoteBLine = (noteLen  - WAIT_MS_OVER BPM) / self->tempo;
+    SEND(sendPlayNoteBLine, 2 * sendPlayNoteBLine, self, MusicPlayNothing, noteIdx);
+    SEND(sendPauseNoteBLine, sendPlayNoteBLine, self, MusicPlayNothing, noteIdx);
 }
 
+void MusicPauseNote() {
+
+}
+
+#define MAX_VOL 15
 void MusicIncreaseVolume(Music* self, int unused) {
-
-
+    if (self->volume < MAX_VOL) self->volume++;
+    ToneSetAmplitude(self->volume);
 }
-void MusicDecreaseVolume(Music* self, int unused);
-void MusicMuteUnmute(Music* self, int unused);
+
+void MusicDecreaseVolume(Music* self, int unused) {
+    if (self->volume > 0) self->volume--;
+    ToneSetAmplitude(self->volume);
+}
+
+void MusicMuteUnmute(Music* self, int unused) {
+    self->mute ^= 1;
+    char buf[100];
+    if (self->mute) snprintf(buf, 100, "mute");
+    else snprintf(buf, 100, "unmute");
+    SCI_WRITE(&sci0, buf);
+}
 
 void MusicPlayBJ(Musc* self, int unused) {
     BEFORE(noteLens[0] / self->tempo, MusicPlayNote, 0);
