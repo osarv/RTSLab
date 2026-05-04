@@ -6,12 +6,12 @@
 
 extern Serial sci0;
 #define ARG_UNUSED 0
-#define DAC (volatile unsigned char*) (0x4000741C)
+#define DAC_TONE (volatile unsigned char*) (0x4000741C)
 
 void ToneGenerate(Tone* self, int unused) {
   if (self->running) {
     self->waveStatus ^= 1;
-    *DAC = self->waveStatus * self->amplitude;
+    *DAC_TONE = self->waveStatus * self->amplitude;
   }
   AFTER(self->period, self, ToneGenerate, ARG_UNUSED);
 }

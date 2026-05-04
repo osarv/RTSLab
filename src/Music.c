@@ -10,9 +10,9 @@ extern Serial sci0;
 
 #define ARG_UNUSED 0
 typedef enum {
-  HALF,
-  QUARTER,
-  EIGHTH
+  EIGHTH = 1,
+  QUARTER = 2,
+  HALF = 4,
 } NoteLen;
 
 const int notes[] = {0, 2, 4, 0, 0, 2, 4, 0, 4, 5, 7, 4, 5, 7, 7, 9, 7, 5, 4, 0, 7, 9, 7, 5, 4, 0, 0, -5, 0, 0, -5, 0};
@@ -33,17 +33,15 @@ void MusicSetKey(Music* self, int key) {
     SCI_WRITE(&sci0, buf);
 }
 
-#define WAIT_OVER_BPM 50 * 100 * 120
+#define WAIT_OVER_BPM (SEC(60) / 16)
 void MusicPlayNote(Music* self, int noteIdx) {
-    SYNC(&tone, ToneSetPeriod, periods[notes[noteIdx + key]]);
-    int noteLen noteLens[noteIdx];
-    int sendPlayNoteBLine = noteLen / self->tempo;
-    int sendPauseNoteBLine = (noteLen  - WAIT_MS_OVER BPM) / self->tempo;
-    if (!self->mute) {
-        SYNC(&tone, ToneToggleRunning, ARG_UNUSED);
-        SEND(sendPauseNoteBLine, sendPlayNoteBLine, &tone, ToneToggleRunning, noteIdx);
-    }
-    SEND(sendPlayNoteBLine, 2 * sendPlayNoteBLine, self, MusicPlayNothing, noteIdx);
+    SYNC(&tone, ToneSetPeriod, periods[notes[noteIdx + self->key]]);
+    int noteLen = noteLens[noteIdx];
+    int sendPlayNoteBLine = (SEC(60) * noteLen) / 2 / self->tempo;
+    int sendPauseNoteBLine = (SEC(60) * noteLen  - WAIT_OVER_BPM) / 2 / self->tempo;
+    SYNC(&tone, ToneToggleRunning, ARG_UNUSED);
+    SEND(sendPauseNoteBLine, sendPlayNoteBLine, &tone, ToneToggleRunning, noteIdx);
+    SEND(sendPlayNoteBLine, 2 * sendPlayNoteBLine, self, MusicPlayNote, noteIdx);
 }
 
 #define MAX_VOL 15
