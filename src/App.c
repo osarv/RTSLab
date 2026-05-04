@@ -6,11 +6,13 @@
 #include "sciTinyTimber.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "Music.h"
 
 #define ARG_UNUSED 0
 extern App app;
 extern Load load;
 extern Tone tone;
+extern Music music;
 extern Can can0;
 extern Serial sci0;
 
@@ -21,7 +23,7 @@ void receiver(App *self, int unused) {
   SCI_WRITE(&sci0, msg.buff);
 }
 
-void printKeyAndPeriods(int key) {
+/*void printKeyAndPeriods(int key) {
   char buf[10];
   snprintf(buf, 10, "Key: %d\n", key);
   SCI_WRITE(&sci0, buf);
@@ -37,7 +39,7 @@ void printTempo(int tempo){
   snprintf(buf, 10, "Tempo: %d\n", tempo);
   SCI_WRITE(&sci0, buf);
   SCI_WRITECHAR(&sci0, '\n');
-}
+}*/
 
 void reader(App* self, int c) {
   switch (c) {
@@ -50,7 +52,7 @@ void reader(App* self, int c) {
       SYNC(&tone, ToneToggleDeadline, ARG_UNUSED);
       SYNC(&load, LoadToggleDeadline, ARG_UNUSED);
       break;
-      
+    */  
     case '0': self->buf[self->len] = c; self->len++; break;
     case '1': self->buf[self->len] = c; self->len++; break;
     case '2': self->buf[self->len] = c; self->len++; break;
@@ -67,28 +69,24 @@ void reader(App* self, int c) {
       self->len = 0;
       if (key <= 5 || key >= -5) {
         ASYNC(&music, MusicSetKey, key);
-        printKeyAndPeriods(key);
         break;
       }
       else {
         SCI_WRITE(&sci0, "Input key not allowed");
         break;
       }
-    }
     case 't':
       self->buf[self->len] = '\0';
       int tempo = atoi(self->buf);
       self->len = 0;
       if (tempo <= 240 || tempo >= 60){
         ASYNC(&music, MusicSetTempo, tempo);
-        printTempo(tempo);
         break;
       }
       else {
         SCI_WRITE(&sci0, "Input tempo not allowed");
         break;
-      }
-      */
+      } 
   }
 }
 

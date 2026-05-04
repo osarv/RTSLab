@@ -9,7 +9,7 @@ typedef struct {
   int volume;
   int tempo;
   int key;
-} Load;
+} Music;
 
 #define initMusic()                                                              \
   { initObject(), 0, 0, 120, 0 }
