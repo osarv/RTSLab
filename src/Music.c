@@ -36,8 +36,8 @@ void MusicPlayNote(Music* self, int noteIdx) {
     int sendPlayNoteBLine = noteLen / self->tempo;
     int sendPauseNoteBLine = (noteLen  - WAIT_MS_OVER BPM) / self->tempo;
     if (!self->mute) {
-        SYNC(&tone, ToneToggle, ARG_UNUSED);
-        SEND(sendPauseNoteBLine, sendPlayNoteBLine, &tone, ToneToggle, noteIdx);
+        SYNC(&tone, ToneToggleRunning, ARG_UNUSED);
+        SEND(sendPauseNoteBLine, sendPlayNoteBLine, &tone, ToneToggleRunning, noteIdx);
     }
     SEND(sendPlayNoteBLine, 2 * sendPlayNoteBLine, self, MusicPlayNothing, noteIdx);
 }
