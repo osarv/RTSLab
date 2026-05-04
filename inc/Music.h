@@ -12,12 +12,11 @@ typedef struct {
 #define initMusic()                                                              \
   { initObject(), 120, 0 }
 
+void MusicPlayBJ(Music* self, int unused);
+void MusicIncreaseVolume(Music* self, int unused);
+void MusicDecreaseVolume(Music* self, int unused);
 void MusicSetTempo(Music* self, int tempo);
 void MusicSetKey(Music* self, int key);
-void MusicPlayNote(Music* self, int noteIdx);
-void MusicPlayNothing(Music* self, int noteIdx);
-void MusicPlayBJ(Music* self, int unused);
-void MusicMute(Music* self, int unused);
-void MusicUnmute(Music* self, int unused);
+void MusicMuteUnmute(Music* self, int unused);
 
 #endif

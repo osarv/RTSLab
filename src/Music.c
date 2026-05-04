@@ -29,11 +29,12 @@ void MusicPlayNote(Music* self, int noteIdx) {
     AFTER((noteLens[noteIdx] - WAIT_MS_OVER_BPM) / self->tempo, self, MusicPlayNothing, noteIdx);
 }
 
-void MusicPlayNothing(Music* self, int noteIdx) {
-    SYNC(&tone, ToneDisable, ARG_UNUSED);
-    if (noteIdx < (sizeof(notes) / sizeof(int)) - 1) (WAIT_OVER_BPM) / self->tempo, self, MusicPlayNote, noteIdx +1);
-    else AFTER(self, MusicPlayBJ, ARG_UNUSED),;
+void MusicIncreaseVolume(Music* self, int unused) {
+
+
 }
+void MusicDecreaseVolume(Music* self, int unused);
+void MusicMuteUnmute(Music* self, int unused);
 
 void MusicPlayBJ(Musc* self, int unused) {
     BEFORE(noteLens[0] / self->tempo, MusicPlayNote, 0);
