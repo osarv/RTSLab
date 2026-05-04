@@ -14,13 +14,9 @@ typedef struct {
 #define initTone()                                                              \
   { initObject(), 0, 0, 0, 0, 0}
 
-void ToneGenerate(Tone* self, int arg);
-//void ToneToggleDeadline(Tone* self, int unused);
+void ToneGenerate(Tone* self, int unused);
 void ToneSetPeriod(Tone* self, int period);
-void ToneIncreaseAmplitude(Tone* self, int unused);
-void ToneDecreaseAmplitude(Tone* self, int unused);
-void ToneToggle(Tone* self, int arg);
-void ToneEnable(Tone* self, int unused);
-void ToneDisable(Tone* self, int unused);
+void ToneSetAmplitude(Tone* self, int ampl);
+void ToneToggle(Tone* self, int unused);
 
 #endif
