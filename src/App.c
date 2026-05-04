@@ -99,8 +99,7 @@ void startApp(App *self, int arg) {
   msg.buff[5] = 0;
   CAN_SEND(&can0, &msg);
 
-  SYNC(&tone, ToneSetPeriod, USEC(500));
-  ASYNC(&tone, ToneGenerate, ARG_UNUSED);
+  ASYNC(&music, MusicPlayBJ, ARG_UNUSED);
 }
 
 int main() {

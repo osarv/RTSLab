@@ -9,11 +9,10 @@ typedef struct {
   int period;
   int waveStatus;
   int amplitude;
-  int deadLine;
 } Tone;
 
 #define initTone()                                                              \
-  { initObject(), 0, 0, 0, 0, 0, 0}
+  { initObject(), 0, 0, 0, 0, 0}
 
 void ToneGenerate(Tone* self, int unused);
 void ToneSetPeriod(Tone* self, int period);
