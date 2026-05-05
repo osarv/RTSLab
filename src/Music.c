@@ -22,26 +22,27 @@ const NoteLen noteLens[] = {QUARTER, QUARTER, QUARTER, QUARTER, QUARTER, QUARTER
 void MusicSetTempo(Music* self, int tempo) {
     self->tempo = tempo;
     char buf[100];
-    snprintf(buf, 100, "new tempo: &d\n", tempo);
+    snprintf(buf, 100, "new tempo: %d\n", tempo);
     SCI_WRITE(&sci0, buf);
 }
 
 void MusicSetKey(Music* self, int key) {
     self->key = key;
     char buf[100];
-    snprintf(buf, 100, "new key: &d\n", key);
+    snprintf(buf, 100, "new key: %d\n", key);
     SCI_WRITE(&sci0, buf);
 }
 
 #define WAIT_OVER_BPM (SEC(60) / 16)
 void MusicPlayNote(Music* self, int noteIdx) {
-    SYNC(&tone, ToneSetPeriod, periods[notes[noteIdx + self->key]]);
+    SYNC(&tone, ToneSetPeriod, periods[notes[noteIdx] + self->key + 10]);
     int noteLen = noteLens[noteIdx];
     int sendPlayNoteBLine = (SEC(60) * noteLen) / 2 / self->tempo;
-    int sendPauseNoteBLine = (SEC(60) * noteLen  - WAIT_OVER_BPM) / 2 / self->tempo;
+    int sendPauseNoteBLine = ((SEC(60) * noteLen)  - (WAIT_OVER_BPM * noteLen)) / 2 / self->tempo;
     SYNC(&tone, ToneToggleRunning, ARG_UNUSED);
-    SEND(sendPauseNoteBLine, sendPlayNoteBLine, &tone, ToneToggleRunning, noteIdx);
-    SEND(sendPlayNoteBLine, 2 * sendPlayNoteBLine, self, MusicPlayNote, noteIdx);
+    SEND(sendPauseNoteBLine, sendPlayNoteBLine, &tone, ToneToggleRunning, ARG_UNUSED);
+    if (noteIdx >= 31) AFTER(sendPlayNoteBLine, self, MusicPlayBJ, ARG_UNUSED);
+    else SEND(sendPlayNoteBLine, 2 * sendPlayNoteBLine, self, MusicPlayNote, noteIdx +1);
 }
 
 #define MAX_VOL 15
@@ -59,6 +60,6 @@ void MusicMuteUnmute(Music* self, int unused) {
     SYNC(&tone, ToneToggleMute, ARG_UNUSED);
 }
 
-void MusicPlayBJ(Music* self, int unused) {
+void MusicPlayBJ(Music* self, int noteNr) {
     BEFORE(noteLens[0] / self->tempo, self, MusicPlayNote, 0);
 }

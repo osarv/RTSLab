@@ -12,12 +12,13 @@ typedef struct {
 } Tone;
 
 #define initTone()                                                              \
-  { initObject(), 0, 0, 0, 0, 0}
+  { initObject(), 0, 0, 0, 0, 5}
 
 void ToneGenerate(Tone* self, int unused);
 void ToneSetPeriod(Tone* self, int period);
 void ToneSetAmplitude(Tone* self, int ampl);
 void ToneToggleRunning(Tone* self, int unused);
 void ToneToggleMute(Tone* self, int unused);
+void ToneFlip(Tone* self, int unused);
 
 #endif

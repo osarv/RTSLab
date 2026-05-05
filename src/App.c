@@ -58,7 +58,7 @@ void reader(App* self, int c) {
       self->buf[self->len] = '\0';
       int key = atoi(self->buf);
       self->len = 0;
-      if (key <= 5 || key >= -5) {
+      if (key <= 5 && key >= -5) {
         ASYNC(&music, MusicSetKey, key);
         break;
       }
@@ -70,7 +70,7 @@ void reader(App* self, int c) {
       self->buf[self->len] = '\0';
       int tempo = atoi(self->buf);
       self->len = 0;
-      if (tempo <= 240 || tempo >= 60){
+      if (tempo <= 240 && tempo >= 60){
         ASYNC(&music, MusicSetTempo, tempo);
         break;
       }
@@ -99,6 +99,7 @@ void startApp(App *self, int arg) {
   msg.buff[5] = 0;
   CAN_SEND(&can0, &msg);
 
+  ASYNC(&tone, ToneGenerate, ARG_UNUSED);
   ASYNC(&music, MusicPlayBJ, ARG_UNUSED);
 }
 

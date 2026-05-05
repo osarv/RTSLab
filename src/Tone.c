@@ -9,11 +9,16 @@ extern Serial sci0;
 #define DAC_TONE (volatile unsigned char*) (0x4000741C)
 
 void ToneGenerate(Tone* self, int unused) {
-  if (self->running) {
+  if (self->running && !self->mute) {
     self->waveStatus ^= 1;
     *DAC_TONE = self->waveStatus * self->amplitude;
   }
-  AFTER(self->period, self, ToneGenerate, ARG_UNUSED);
+  SEND(self->period, self->period * 2, self, ToneGenerate, ARG_UNUSED);
+}
+
+void ToneFlip(Tone* self, int unused){
+  self->waveStatus ^= 1;
+  *DAC_TONE = self->waveStatus * self->amplitude;
 }
 
 void ToneSetPeriod(Tone* self, int period) {
