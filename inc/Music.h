@@ -8,12 +8,15 @@ typedef struct {
   int volume;
   int tempo;
   int key;
+  int playing;
+  int conductor;
 } Music;
 
-#define initMusic()                                                              \
-  { initObject(), 14, 120, 0 }
+#define initMusic(int conductor)                                                              \
+  { initObject(), 14, 120, 0, 0, conductor}
 
 void MusicPlayBJ(Music* self, int unused);
+void MusicStopBJ(Music* self, int unused);
 void MusicIncreaseVolume(Music* self, int unused);
 void MusicDecreaseVolume(Music* self, int unused);
 void MusicSetTempo(Music* self, int tempo);

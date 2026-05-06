@@ -14,23 +14,47 @@ extern Music music;
 extern Can can0;
 extern Serial sci0;
 
+typedef struct {
+  enum {
+    MSG_START_BJ,
+    MSG_MUTE_UNMUTE,
+    MSG_VOLUME_UP,
+    MSG_VOLUME_DOWN,
+    MSG_NEW_TEMPO,
+    MSG_NEW_KEY
+  } type;
+  int val;
+} CANPayload;
+
+CANPayload unpackCANMsg(CANMsg msg) {
+  CANPayload* pLoad = (CANPayload*)msg.buff;
+  return *pLoad;
+}
+
+CANMsg packCANMsg(CANPayload pLoad) {
+  CANMsg* msg;
+  msg->msgId = 1;
+  msg->nodeId = 1;
+  msg.length = 8;
+  memcpy(&(msg.buff), &(pLoad), 8);
+  return msg;
+}
+
 void receiver(App *self, int unused) {
   CANMsg msg;
   CAN_RECEIVE(&can0, &msg);
   SCI_WRITE(&sci0, "Can msg received: ");
+  CANPayload pLoad = unpackCANMsg(msg);
   SCI_WRITE(&sci0, msg.buff);
-}
 
-typedef struct {
-  enum {
-    MSG_VOLUME_MUTE_UNMUTE,
-    MSG_VOLUME_UP,
-    MSG_VOLUME_DOWN,
-    MSG_VOLUME_NEW_TEMPO,
-    MSG_VOLUME_NEW_KEY
-  } type;
-  int val;
-} CanPayload;
+  switch(pLoad.type) {
+    case MSG_START_BJ: ASYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
+    case MSG_MUTE_UNMUTE: SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
+    case MSG_VOLUME_UP: SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
+    case MSG_VOLUME_DOWN: SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
+    case MSG_NEW_KEY: SYNC(&music, MusicSetKey, pLoad.val); break;
+    case MSG_NEW_TEMPO: SYNC(&music, MusicSetTempo, pLoad.val); break;
+}
 
 /*void printKeyAndPeriods(int key) {
   char buf[10];
