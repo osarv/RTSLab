@@ -41,8 +41,8 @@ void printTempo(int tempo){
 
 void reader(App* self, int c) {
   switch (c) {
-    case '+': SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
-    case '-': SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
+    case ',': SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
+    case '.': SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
     case 'm': SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
     case '0': self->buf[self->len] = c; self->len++; break;
     case '1': self->buf[self->len] = c; self->len++; break;
@@ -54,6 +54,7 @@ void reader(App* self, int c) {
     case '7': self->buf[self->len] = c; self->len++; break;
     case '8': self->buf[self->len] = c; self->len++; break;
     case '9': self->buf[self->len] = c; self->len++; break;
+    case '-': self->buf[self->len] = c; self->len++; break;
     case 'k':
       self->buf[self->len] = '\0';
       int key = atoi(self->buf);
