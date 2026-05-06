@@ -48,13 +48,13 @@ void CanSendMsg(CANMsgType type, int val) {
 
 void CANPLoadAcknowledge(CANPayload pLoad) {
   switch(pLoad.type) {
-    case MSG_START_BJ: SCI_WRITE(&sci0, "starting song\n"); ASYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
-    case MSG_STOP_BJ: SCI_WRITE(&sci0, "stopping song\n"); ASYNC(&music, MusicStopBJ, ARG_UNUSED); break;
-    case MSG_MUTE_UNMUTE: SCI_WRITE(&sci0, "mute/unmute\n"); SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
-    case MSG_VOLUME_UP: SCI_WRITE(&sci0, "volume up\n"); SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
-    case MSG_VOLUME_DOWN: SCI_WRITE(&sci0, "volume down\n"); SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
-    case MSG_NEW_KEY: SCI_WRITE(&sci0, "new key\n"); SYNC(&music, MusicSetKey, pLoad.val); break;
-    case MSG_NEW_TEMPO: SCI_WRITE(&sci0, "new tempo\n"); SYNC(&music, MusicSetTempo, pLoad.val); break;
+    case MSG_START_BJ: SCI_WRITE(&sci0, "starting song\n"); break;
+    case MSG_STOP_BJ: SCI_WRITE(&sci0, "stopping song\n"); break;
+    case MSG_MUTE_UNMUTE: SCI_WRITE(&sci0, "mute/unmute\n"); break;
+    case MSG_VOLUME_UP: SCI_WRITE(&sci0, "volume up\n"); break;
+    case MSG_VOLUME_DOWN: SCI_WRITE(&sci0, "volume down\n"); break;
+    case MSG_NEW_KEY: SCI_WRITE(&sci0, "new key\n"); break;
+    case MSG_NEW_TEMPO: SCI_WRITE(&sci0, "new tempo\n"); break;
   }
 }
 
