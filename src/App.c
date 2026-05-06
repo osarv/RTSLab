@@ -40,13 +40,7 @@ CANMsg packCANMsg(CANPayload pLoad) {
   return msg;
 }
 
-void receiver(App *self, int unused) {
-  CANMsg msg;
-  CAN_RECEIVE(&can0, &msg);
-  SCI_WRITE(&sci0, "Can msg received: ");
-  CANPayload pLoad = unpackCANMsg(msg);
-  SCI_WRITE(&sci0, msg.buff);
-
+void CANPLoadAct(CANPayload pLoad) {
   switch(pLoad.type) {
     case MSG_START_BJ: ASYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
     case MSG_MUTE_UNMUTE: SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
@@ -54,25 +48,18 @@ void receiver(App *self, int unused) {
     case MSG_VOLUME_DOWN: SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
     case MSG_NEW_KEY: SYNC(&music, MusicSetKey, pLoad.val); break;
     case MSG_NEW_TEMPO: SYNC(&music, MusicSetTempo, pLoad.val); break;
-}
-
-/*void printKeyAndPeriods(int key) {
-  char buf[10];
-  snprintf(buf, 10, "Key: %d\n", key);
-  SCI_WRITE(&sci0, buf);
-  for (int i = 0; i < sizeof(notes) / sizeof(int); i++) {
-    snprintf(buf, 10, "%d ", periods[notes[i] + key + 10]);
-    SCI_WRITE(&sci0, buf);
   }
-  SCI_WRITECHAR(&sci0, '\n');
 }
 
-void printTempo(int tempo){
-  char buf[10];
-  snprintf(buf, 10, "Tempo: %d\n", tempo);
-  SCI_WRITE(&sci0, buf);
-  SCI_WRITECHAR(&sci0, '\n');
-}*/
+void receiver(App *self, int unused) {
+  CANMsg msg;
+  msg.msgId = 0;
+  msg.nodeId = 0;
+  CAN_RECEIVE(&can0, &msg);
+  SCI_WRITE(&sci0, "Can msg received: ");
+  CANPayload pLoad = unpackCANMsg(msg);
+  SCI_WRITE(&sci0, msg.buff);
+}
 
 void reader(App* self, int c) {
   switch (c) {
