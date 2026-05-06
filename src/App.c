@@ -43,29 +43,41 @@ void CanSendMsg(CANMsgType type, int val) {
   msg.length = 8;
   CANPayload pLoad = {type, val};
   memcpy(&msg.buff, &pLoad, sizeof(CANPayload));
-  SCI_WRITE(&sci0, "sending");
   CAN_SEND(&can0, &msg);
 }
 
+void CANPLoadAcknowledge(CANPayload pLoad) {
+  switch(pLoad.type) {
+    case MSG_START_BJ: SCI_WRITE(&sci0, "starting song\n"); ASYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
+    case MSG_STOP_BJ: SCI_WRITE(&sci0, "stopping song\n"); ASYNC(&music, MusicStopBJ, ARG_UNUSED); break;
+    case MSG_MUTE_UNMUTE: SCI_WRITE(&sci0, "mute/unmute\n"); SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
+    case MSG_VOLUME_UP: SCI_WRITE(&sci0, "volume up\n"); SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
+    case MSG_VOLUME_DOWN: SCI_WRITE(&sci0, "volume down\n"); SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
+    case MSG_NEW_KEY: SCI_WRITE(&sci0, "new key\n"); SYNC(&music, MusicSetKey, pLoad.val); break;
+    case MSG_NEW_TEMPO: SCI_WRITE(&sci0, "new tempo\n"); SYNC(&music, MusicSetTempo, pLoad.val); break;
+  }
+}
+
+
 void CANPLoadAct(CANPayload pLoad) {
   switch(pLoad.type) {
-    case MSG_START_BJ: ASYNC(&music, MusicPlayBJ, ARG_UNUSED); SCI_WRITE(&sci0, "starting song\n"); break;
-    case MSG_STOP_BJ: ASYNC(&music, MusicStopBJ, ARG_UNUSED); SCI_WRITE(&sci0, "stopping song\n"); break;
-    case MSG_MUTE_UNMUTE: SYNC(&music, MusicMuteUnmute, ARG_UNUSED); SCI_WRITE(&sci0, "mute/unmute\n"); break;
-    case MSG_VOLUME_UP: SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); SCI_WRITE(&sci0, "volume up\n"); break;
-    case MSG_VOLUME_DOWN: SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); SCI_WRITE(&sci0, "volume down\n"); break;
-    case MSG_NEW_KEY: SYNC(&music, MusicSetKey, pLoad.val); SCI_WRITE(&sci0, "new key\n"); break;
-    case MSG_NEW_TEMPO: SYNC(&music, MusicSetTempo, pLoad.val); SCI_WRITE(&sci0, "new tempo\n"); break;
+    case MSG_START_BJ: ASYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
+    case MSG_STOP_BJ: ASYNC(&music, MusicStopBJ, ARG_UNUSED); break;
+    case MSG_MUTE_UNMUTE: SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
+    case MSG_VOLUME_UP: SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
+    case MSG_VOLUME_DOWN: SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
+    case MSG_NEW_KEY: SYNC(&music, MusicSetKey, pLoad.val); break;
+    case MSG_NEW_TEMPO: SYNC(&music, MusicSetTempo, pLoad.val); break;
   }
 }
 
 void receiver(App *self, int unused) {
   CANMsg msg;
-  SCI_WRITE(&sci0, "receiving\n");
   CAN_RECEIVE(&can0, &msg);
   SCI_WRITE(&sci0, "Can msg received: ");
   CANPayload pLoad = unpackCANMsg(msg);
-  CANPLoadAct(pLoad);
+  CANPLoadAcknowledge(pLoad);
+  if (!self->conductor) CANPLoadAct(pLoad);
 }
 
 
