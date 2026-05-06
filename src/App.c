@@ -6,6 +6,7 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "Music.h"
+#include "string.h"
 
 #define ARG_UNUSED 0
 extern App app;
@@ -32,9 +33,9 @@ CANPayload unpackCANMsg(CANMsg msg) {
 }
 
 CANMsg packCANMsg(CANPayload pLoad) {
-  CANMsg* msg;
-  msg->msgId = 1;
-  msg->nodeId = 1;
+  CANMsg msg;
+  msg.msgId = 1;
+  msg.nodeId = 1;
   msg.length = 8;
   memcpy(&(msg.buff), &(pLoad), 8);
   return msg;
