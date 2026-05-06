@@ -13,7 +13,7 @@ void ToneGenerate(Tone* self, int unused) {
     self->waveStatus ^= 1;
     *DAC_TONE = self->waveStatus * self->amplitude;
   }
-  SEND(self->period, self->period * 2, self, ToneGenerate, ARG_UNUSED);
+  SEND(self->period / 8, self->period / 4, self, ToneGenerate, ARG_UNUSED);
 }
 
 void ToneFlip(Tone* self, int unused){
