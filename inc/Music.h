@@ -12,7 +12,7 @@ typedef struct {
   int conductor;
 } Music;
 
-#define initMusic(int conductor)                                                              \
+#define initMusic(conductor)                                                              \
   { initObject(), 14, 120, 0, 0, conductor}
 
 void MusicPlayBJ(Music* self, int unused);
