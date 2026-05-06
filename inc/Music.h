@@ -9,11 +9,10 @@ typedef struct {
   int tempo;
   int key;
   int playing;
-  int conductor;
 } Music;
 
 #define initMusic(conductor)                                                              \
-  { initObject(), 14, 120, 0, 0, conductor}
+  { initObject(), 14, 120, 0, 0 }
 
 void MusicPlayBJ(Music* self, int unused);
 void MusicStopBJ(Music* self, int unused);

@@ -7,11 +7,12 @@
 typedef struct {
   Object super;
   int len;
+  int conductor;
   char buf[BSIZE];
 } App;
 
 #define initApp()                                                              \
-  { initObject(), 0, {0} }
+  { initObject(), 0, 0, {0} }
 
 void reader(App *, int);
 void receiver(App *, int);
