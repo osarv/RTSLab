@@ -12,7 +12,7 @@ typedef struct {
 } Tone;
 
 #define initTone()                                                              \
-  { initObject(), 0, 0, 0, 0, 5}
+  { initObject(), 0, 0, 0, 0, 14}
 
 void ToneGenerate(Tone* self, int unused);
 void ToneSetPeriod(Tone* self, int period);

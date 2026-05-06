@@ -48,12 +48,12 @@ void MusicPlayNote(Music* self, int noteIdx) {
 #define MAX_VOL 15
 void MusicIncreaseVolume(Music* self, int unused) {
     if (self->volume < MAX_VOL) self->volume++;
-    ToneSetAmplitude(&tone, self->volume);
+    SYNC(&tone, ToneSetAmplitude, self->volume);
 }
 
 void MusicDecreaseVolume(Music* self, int unused) {
     if (self->volume > 0) self->volume--;
-    ToneSetAmplitude(&tone, self->volume);
+    SYNC(&tone, ToneSetAmplitude, self->volume);
 }
 
 void MusicMuteUnmute(Music* self, int unused) {

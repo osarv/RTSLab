@@ -21,6 +21,17 @@ void receiver(App *self, int unused) {
   SCI_WRITE(&sci0, msg.buff);
 }
 
+typedef struct {
+  enum {
+    MSG_VOLUME_MUTE_UNMUTE,
+    MSG_VOLUME_UP,
+    MSG_VOLUME_DOWN,
+    MSG_VOLUME_NEW_TEMPO,
+    MSG_VOLUME_NEW_KEY
+  } type;
+  int val;
+} CanPayload;
+
 /*void printKeyAndPeriods(int key) {
   char buf[10];
   snprintf(buf, 10, "Key: %d\n", key);

@@ -11,7 +11,7 @@ typedef struct {
 } Music;
 
 #define initMusic()                                                              \
-  { initObject(), 5, 120, 0 }
+  { initObject(), 14, 120, 0 }
 
 void MusicPlayBJ(Music* self, int unused);
 void MusicIncreaseVolume(Music* self, int unused);

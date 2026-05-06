@@ -16,27 +16,38 @@ Disassembly of section .text:
 20000018:	2001c000 	.word	0x2001c000
 
 2000001c <receiver>:
+extern Tone tone;
+extern Music music;
+extern Can can0;
+extern Serial sci0;
+
+void receiver(App *self, int unused) {
 2000001c:	b580      	push	{r7, lr}
 2000001e:	b086      	sub	sp, #24
 20000020:	af00      	add	r7, sp, #0
 20000022:	6078      	str	r0, [r7, #4]
 20000024:	6039      	str	r1, [r7, #0]
+  CANMsg msg;
+  CAN_RECEIVE(&can0, &msg);
 20000026:	f107 030c 	add.w	r3, r7, #12
 2000002a:	461a      	mov	r2, r3
 2000002c:	490a      	ldr	r1, [pc, #40]	@ (20000058 <receiver+0x3c>)
 2000002e:	480b      	ldr	r0, [pc, #44]	@ (2000005c <receiver+0x40>)
 20000030:	f001 f92e 	bl	20001290 <sync>
+  SCI_WRITE(&sci0, "Can msg received: ");
 20000034:	4b0a      	ldr	r3, [pc, #40]	@ (20000060 <receiver+0x44>)
 20000036:	461a      	mov	r2, r3
 20000038:	490a      	ldr	r1, [pc, #40]	@ (20000064 <receiver+0x48>)
 2000003a:	480b      	ldr	r0, [pc, #44]	@ (20000068 <receiver+0x4c>)
 2000003c:	f001 f928 	bl	20001290 <sync>
+  SCI_WRITE(&sci0, msg.buff);
 20000040:	f107 030c 	add.w	r3, r7, #12
 20000044:	3303      	adds	r3, #3
 20000046:	461a      	mov	r2, r3
 20000048:	4906      	ldr	r1, [pc, #24]	@ (20000064 <receiver+0x48>)
 2000004a:	4807      	ldr	r0, [pc, #28]	@ (20000068 <receiver+0x4c>)
 2000004c:	f001 f920 	bl	20001290 <sync>
+}
 20000050:	bf00      	nop
 20000052:	3718      	adds	r7, #24
 20000054:	46bd      	mov	sp, r7
@@ -48,11 +59,18 @@ Disassembly of section .text:
 20000068:	200090a8 	.word	0x200090a8
 
 2000006c <reader>:
+  snprintf(buf, 10, "Tempo: %d\n", tempo);
+  SCI_WRITE(&sci0, buf);
+  SCI_WRITECHAR(&sci0, '\n');
+}*/
+
+void reader(App* self, int c) {
 2000006c:	b580      	push	{r7, lr}
 2000006e:	b086      	sub	sp, #24
 20000070:	af02      	add	r7, sp, #8
 20000072:	6078      	str	r0, [r7, #4]
 20000074:	6039      	str	r1, [r7, #0]
+  switch (c) {
 20000076:	683b      	ldr	r3, [r7, #0]
 20000078:	3b2c      	subs	r3, #44	@ 0x2c
 2000007a:	2b48      	cmp	r3, #72	@ 0x48
@@ -133,21 +151,25 @@ Disassembly of section .text:
 200001a0:	2000039b 	.word	0x2000039b
 200001a4:	2000039b 	.word	0x2000039b
 200001a8:	20000351 	.word	0x20000351
+    case ',': SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
 200001ac:	2200      	movs	r2, #0
 200001ae:	497d      	ldr	r1, [pc, #500]	@ (200003a4 <reader+0x338>)
 200001b0:	487d      	ldr	r0, [pc, #500]	@ (200003a8 <reader+0x33c>)
 200001b2:	f001 f86d 	bl	20001290 <sync>
 200001b6:	e0f0      	b.n	2000039a <reader+0x32e>
+    case '.': SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
 200001b8:	2200      	movs	r2, #0
 200001ba:	497c      	ldr	r1, [pc, #496]	@ (200003ac <reader+0x340>)
 200001bc:	487a      	ldr	r0, [pc, #488]	@ (200003a8 <reader+0x33c>)
 200001be:	f001 f867 	bl	20001290 <sync>
 200001c2:	e0ea      	b.n	2000039a <reader+0x32e>
+    case 'm': SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
 200001c4:	2200      	movs	r2, #0
 200001c6:	497a      	ldr	r1, [pc, #488]	@ (200003b0 <reader+0x344>)
 200001c8:	4877      	ldr	r0, [pc, #476]	@ (200003a8 <reader+0x33c>)
 200001ca:	f001 f861 	bl	20001290 <sync>
 200001ce:	e0e4      	b.n	2000039a <reader+0x32e>
+    case '0': self->buf[self->len] = c; self->len++; break;
 200001d0:	687b      	ldr	r3, [r7, #4]
 200001d2:	689b      	ldr	r3, [r3, #8]
 200001d4:	683a      	ldr	r2, [r7, #0]
@@ -162,6 +184,7 @@ Disassembly of section .text:
 200001e6:	687b      	ldr	r3, [r7, #4]
 200001e8:	609a      	str	r2, [r3, #8]
 200001ea:	e0d6      	b.n	2000039a <reader+0x32e>
+    case '1': self->buf[self->len] = c; self->len++; break;
 200001ec:	687b      	ldr	r3, [r7, #4]
 200001ee:	689b      	ldr	r3, [r3, #8]
 200001f0:	683a      	ldr	r2, [r7, #0]
@@ -176,6 +199,7 @@ Disassembly of section .text:
 20000202:	687b      	ldr	r3, [r7, #4]
 20000204:	609a      	str	r2, [r3, #8]
 20000206:	e0c8      	b.n	2000039a <reader+0x32e>
+    case '2': self->buf[self->len] = c; self->len++; break;
 20000208:	687b      	ldr	r3, [r7, #4]
 2000020a:	689b      	ldr	r3, [r3, #8]
 2000020c:	683a      	ldr	r2, [r7, #0]
@@ -190,6 +214,7 @@ Disassembly of section .text:
 2000021e:	687b      	ldr	r3, [r7, #4]
 20000220:	609a      	str	r2, [r3, #8]
 20000222:	e0ba      	b.n	2000039a <reader+0x32e>
+    case '3': self->buf[self->len] = c; self->len++; break;
 20000224:	687b      	ldr	r3, [r7, #4]
 20000226:	689b      	ldr	r3, [r3, #8]
 20000228:	683a      	ldr	r2, [r7, #0]
@@ -204,6 +229,7 @@ Disassembly of section .text:
 2000023a:	687b      	ldr	r3, [r7, #4]
 2000023c:	609a      	str	r2, [r3, #8]
 2000023e:	e0ac      	b.n	2000039a <reader+0x32e>
+    case '4': self->buf[self->len] = c; self->len++; break;
 20000240:	687b      	ldr	r3, [r7, #4]
 20000242:	689b      	ldr	r3, [r3, #8]
 20000244:	683a      	ldr	r2, [r7, #0]
@@ -218,6 +244,7 @@ Disassembly of section .text:
 20000256:	687b      	ldr	r3, [r7, #4]
 20000258:	609a      	str	r2, [r3, #8]
 2000025a:	e09e      	b.n	2000039a <reader+0x32e>
+    case '5': self->buf[self->len] = c; self->len++; break;
 2000025c:	687b      	ldr	r3, [r7, #4]
 2000025e:	689b      	ldr	r3, [r3, #8]
 20000260:	683a      	ldr	r2, [r7, #0]
@@ -232,6 +259,7 @@ Disassembly of section .text:
 20000272:	687b      	ldr	r3, [r7, #4]
 20000274:	609a      	str	r2, [r3, #8]
 20000276:	e090      	b.n	2000039a <reader+0x32e>
+    case '6': self->buf[self->len] = c; self->len++; break;
 20000278:	687b      	ldr	r3, [r7, #4]
 2000027a:	689b      	ldr	r3, [r3, #8]
 2000027c:	683a      	ldr	r2, [r7, #0]
@@ -246,6 +274,7 @@ Disassembly of section .text:
 2000028e:	687b      	ldr	r3, [r7, #4]
 20000290:	609a      	str	r2, [r3, #8]
 20000292:	e082      	b.n	2000039a <reader+0x32e>
+    case '7': self->buf[self->len] = c; self->len++; break;
 20000294:	687b      	ldr	r3, [r7, #4]
 20000296:	689b      	ldr	r3, [r3, #8]
 20000298:	683a      	ldr	r2, [r7, #0]
@@ -260,6 +289,7 @@ Disassembly of section .text:
 200002aa:	687b      	ldr	r3, [r7, #4]
 200002ac:	609a      	str	r2, [r3, #8]
 200002ae:	e074      	b.n	2000039a <reader+0x32e>
+    case '8': self->buf[self->len] = c; self->len++; break;
 200002b0:	687b      	ldr	r3, [r7, #4]
 200002b2:	689b      	ldr	r3, [r3, #8]
 200002b4:	683a      	ldr	r2, [r7, #0]
@@ -274,6 +304,7 @@ Disassembly of section .text:
 200002c6:	687b      	ldr	r3, [r7, #4]
 200002c8:	609a      	str	r2, [r3, #8]
 200002ca:	e066      	b.n	2000039a <reader+0x32e>
+    case '9': self->buf[self->len] = c; self->len++; break;
 200002cc:	687b      	ldr	r3, [r7, #4]
 200002ce:	689b      	ldr	r3, [r3, #8]
 200002d0:	683a      	ldr	r2, [r7, #0]
@@ -288,6 +319,7 @@ Disassembly of section .text:
 200002e2:	687b      	ldr	r3, [r7, #4]
 200002e4:	609a      	str	r2, [r3, #8]
 200002e6:	e058      	b.n	2000039a <reader+0x32e>
+    case '-': self->buf[self->len] = c; self->len++; break;
 200002e8:	687b      	ldr	r3, [r7, #4]
 200002ea:	689b      	ldr	r3, [r3, #8]
 200002ec:	683a      	ldr	r2, [r7, #0]
@@ -302,26 +334,32 @@ Disassembly of section .text:
 200002fe:	687b      	ldr	r3, [r7, #4]
 20000300:	609a      	str	r2, [r3, #8]
 20000302:	e04a      	b.n	2000039a <reader+0x32e>
+    case 'k':
+      self->buf[self->len] = '\0';
 20000304:	687b      	ldr	r3, [r7, #4]
 20000306:	689b      	ldr	r3, [r3, #8]
 20000308:	687a      	ldr	r2, [r7, #4]
 2000030a:	4413      	add	r3, r2
 2000030c:	2200      	movs	r2, #0
 2000030e:	731a      	strb	r2, [r3, #12]
+      int key = atoi(self->buf);
 20000310:	687b      	ldr	r3, [r7, #4]
 20000312:	330c      	adds	r3, #12
 20000314:	4618      	mov	r0, r3
 20000316:	f007 f91b 	bl	20007550 <atoi>
 2000031a:	60b8      	str	r0, [r7, #8]
+      self->len = 0;
 2000031c:	687b      	ldr	r3, [r7, #4]
 2000031e:	2200      	movs	r2, #0
 20000320:	609a      	str	r2, [r3, #8]
+      if (key <= 5 && key >= -5) {
 20000322:	68bb      	ldr	r3, [r7, #8]
 20000324:	2b05      	cmp	r3, #5
 20000326:	dc0c      	bgt.n	20000342 <reader+0x2d6>
 20000328:	68bb      	ldr	r3, [r7, #8]
 2000032a:	f113 0f05 	cmn.w	r3, #5
 2000032e:	db08      	blt.n	20000342 <reader+0x2d6>
+        ASYNC(&music, MusicSetKey, key);
 20000330:	68bb      	ldr	r3, [r7, #8]
 20000332:	9300      	str	r3, [sp, #0]
 20000334:	4b1f      	ldr	r3, [pc, #124]	@ (200003b4 <reader+0x348>)
@@ -329,33 +367,45 @@ Disassembly of section .text:
 20000338:	2100      	movs	r1, #0
 2000033a:	2000      	movs	r0, #0
 2000033c:	f000 ff0a 	bl	20001154 <async>
+        break;
 20000340:	e02b      	b.n	2000039a <reader+0x32e>
+      }
+      else {
+        SCI_WRITE(&sci0, "Input key not allowed! >:(\n");
 20000342:	4b1d      	ldr	r3, [pc, #116]	@ (200003b8 <reader+0x34c>)
 20000344:	461a      	mov	r2, r3
 20000346:	491d      	ldr	r1, [pc, #116]	@ (200003bc <reader+0x350>)
 20000348:	481d      	ldr	r0, [pc, #116]	@ (200003c0 <reader+0x354>)
 2000034a:	f000 ffa1 	bl	20001290 <sync>
+        break;
 2000034e:	e024      	b.n	2000039a <reader+0x32e>
+      }
+    case 't':
+      self->buf[self->len] = '\0';
 20000350:	687b      	ldr	r3, [r7, #4]
 20000352:	689b      	ldr	r3, [r3, #8]
 20000354:	687a      	ldr	r2, [r7, #4]
 20000356:	4413      	add	r3, r2
 20000358:	2200      	movs	r2, #0
 2000035a:	731a      	strb	r2, [r3, #12]
+      int tempo = atoi(self->buf);
 2000035c:	687b      	ldr	r3, [r7, #4]
 2000035e:	330c      	adds	r3, #12
 20000360:	4618      	mov	r0, r3
 20000362:	f007 f8f5 	bl	20007550 <atoi>
 20000366:	60f8      	str	r0, [r7, #12]
+      self->len = 0;
 20000368:	687b      	ldr	r3, [r7, #4]
 2000036a:	2200      	movs	r2, #0
 2000036c:	609a      	str	r2, [r3, #8]
+      if (tempo <= 240 && tempo >= 60){
 2000036e:	68fb      	ldr	r3, [r7, #12]
 20000370:	2bf0      	cmp	r3, #240	@ 0xf0
 20000372:	dc0b      	bgt.n	2000038c <reader+0x320>
 20000374:	68fb      	ldr	r3, [r7, #12]
 20000376:	2b3b      	cmp	r3, #59	@ 0x3b
 20000378:	dd08      	ble.n	2000038c <reader+0x320>
+        ASYNC(&music, MusicSetTempo, tempo);
 2000037a:	68fb      	ldr	r3, [r7, #12]
 2000037c:	9300      	str	r3, [sp, #0]
 2000037e:	4b11      	ldr	r3, [pc, #68]	@ (200003c4 <reader+0x358>)
@@ -363,13 +413,21 @@ Disassembly of section .text:
 20000382:	2100      	movs	r1, #0
 20000384:	2000      	movs	r0, #0
 20000386:	f000 fee5 	bl	20001154 <async>
+        break;
 2000038a:	e006      	b.n	2000039a <reader+0x32e>
+      }
+      else {
+        SCI_WRITE(&sci0, "Input tempo not allowed! >:(\n");
 2000038c:	4b0e      	ldr	r3, [pc, #56]	@ (200003c8 <reader+0x35c>)
 2000038e:	461a      	mov	r2, r3
 20000390:	490a      	ldr	r1, [pc, #40]	@ (200003bc <reader+0x350>)
 20000392:	480b      	ldr	r0, [pc, #44]	@ (200003c0 <reader+0x354>)
 20000394:	f000 ff7c 	bl	20001290 <sync>
+        break;
 20000398:	bf00      	nop
+      } 
+  }
+}
 2000039a:	bf00      	nop
 2000039c:	3710      	adds	r7, #16
 2000039e:	46bd      	mov	sp, r7
@@ -387,47 +445,67 @@ Disassembly of section .text:
 200003c8:	200081f4 	.word	0x200081f4
 
 200003cc <startApp>:
+
+void startApp(App *self, int arg) {
 200003cc:	b580      	push	{r7, lr}
 200003ce:	b088      	sub	sp, #32
 200003d0:	af02      	add	r7, sp, #8
 200003d2:	6078      	str	r0, [r7, #4]
 200003d4:	6039      	str	r1, [r7, #0]
+  CANMsg msg;
+
+  CAN_INIT(&can0);
 200003d6:	2200      	movs	r2, #0
 200003d8:	491d      	ldr	r1, [pc, #116]	@ (20000450 <startApp+0x84>)
 200003da:	481e      	ldr	r0, [pc, #120]	@ (20000454 <startApp+0x88>)
 200003dc:	f000 ff58 	bl	20001290 <sync>
+  SCI_INIT(&sci0);
 200003e0:	2200      	movs	r2, #0
 200003e2:	491d      	ldr	r1, [pc, #116]	@ (20000458 <startApp+0x8c>)
 200003e4:	481d      	ldr	r0, [pc, #116]	@ (2000045c <startApp+0x90>)
 200003e6:	f000 ff53 	bl	20001290 <sync>
+  SCI_WRITE(&sci0, "Hello, hello...\n");
 200003ea:	4b1d      	ldr	r3, [pc, #116]	@ (20000460 <startApp+0x94>)
 200003ec:	461a      	mov	r2, r3
 200003ee:	491d      	ldr	r1, [pc, #116]	@ (20000464 <startApp+0x98>)
 200003f0:	481a      	ldr	r0, [pc, #104]	@ (2000045c <startApp+0x90>)
 200003f2:	f000 ff4d 	bl	20001290 <sync>
+
+  msg.msgId = 1;
 200003f6:	2301      	movs	r3, #1
 200003f8:	733b      	strb	r3, [r7, #12]
+  msg.nodeId = 1;
 200003fa:	2301      	movs	r3, #1
 200003fc:	737b      	strb	r3, [r7, #13]
+  msg.length = 6;
 200003fe:	2306      	movs	r3, #6
 20000400:	73bb      	strb	r3, [r7, #14]
+  msg.buff[0] = 'H';
 20000402:	2348      	movs	r3, #72	@ 0x48
 20000404:	73fb      	strb	r3, [r7, #15]
+  msg.buff[1] = 'e';
 20000406:	2365      	movs	r3, #101	@ 0x65
 20000408:	743b      	strb	r3, [r7, #16]
+  msg.buff[2] = 'l';
 2000040a:	236c      	movs	r3, #108	@ 0x6c
 2000040c:	747b      	strb	r3, [r7, #17]
+  msg.buff[3] = 'l';
 2000040e:	236c      	movs	r3, #108	@ 0x6c
 20000410:	74bb      	strb	r3, [r7, #18]
+  msg.buff[4] = 'o';
 20000412:	236f      	movs	r3, #111	@ 0x6f
 20000414:	74fb      	strb	r3, [r7, #19]
+  msg.buff[5] = 0;
 20000416:	2300      	movs	r3, #0
 20000418:	753b      	strb	r3, [r7, #20]
+  CAN_SEND(&can0, &msg);
 2000041a:	f107 030c 	add.w	r3, r7, #12
 2000041e:	461a      	mov	r2, r3
 20000420:	4911      	ldr	r1, [pc, #68]	@ (20000468 <startApp+0x9c>)
 20000422:	480c      	ldr	r0, [pc, #48]	@ (20000454 <startApp+0x88>)
 20000424:	f000 ff34 	bl	20001290 <sync>
+
+  ASYNC(&tone, ToneGenerate, ARG_UNUSED);
 20000428:	2300      	movs	r3, #0
 2000042a:	9300      	str	r3, [sp, #0]
 2000042c:	4b0f      	ldr	r3, [pc, #60]	@ (2000046c <startApp+0xa0>)
@@ -435,6 +513,7 @@ Disassembly of section .text:
 20000430:	2100      	movs	r1, #0
 20000432:	2000      	movs	r0, #0
 20000434:	f000 fe8e 	bl	20001154 <async>
+  ASYNC(&music, MusicPlayBJ, ARG_UNUSED);
 20000438:	2300      	movs	r3, #0
 2000043a:	9300      	str	r3, [sp, #0]
 2000043c:	4b0d      	ldr	r3, [pc, #52]	@ (20000474 <startApp+0xa8>)
@@ -442,6 +521,7 @@ Disassembly of section .text:
 20000440:	2100      	movs	r1, #0
 20000442:	2000      	movs	r0, #0
 20000444:	f000 fe86 	bl	20001154 <async>
+}
 20000448:	bf00      	nop
 2000044a:	3718      	adds	r7, #24
 2000044c:	46bd      	mov	sp, r7
@@ -459,21 +539,28 @@ Disassembly of section .text:
 20000478:	2000901c 	.word	0x2000901c
 
 2000047c <main>:
+
+int main() {
 2000047c:	b580      	push	{r7, lr}
 2000047e:	af00      	add	r7, sp, #0
+  INSTALL(&sci0, sci_interrupt, SCI_IRQ0);
 20000480:	2200      	movs	r2, #0
 20000482:	4908      	ldr	r1, [pc, #32]	@ (200004a4 <main+0x28>)
 20000484:	4808      	ldr	r0, [pc, #32]	@ (200004a8 <main+0x2c>)
 20000486:	f001 f8f7 	bl	20001678 <install>
+  INSTALL(&can0, can_interrupt, CAN_IRQ0);
 2000048a:	2201      	movs	r2, #1
 2000048c:	4907      	ldr	r1, [pc, #28]	@ (200004ac <main+0x30>)
 2000048e:	4808      	ldr	r0, [pc, #32]	@ (200004b0 <main+0x34>)
 20000490:	f001 f8f2 	bl	20001678 <install>
+  TINYTIMBER(&app, startApp, 0);
 20000494:	2200      	movs	r2, #0
 20000496:	4907      	ldr	r1, [pc, #28]	@ (200004b4 <main+0x38>)
 20000498:	4807      	ldr	r0, [pc, #28]	@ (200004b8 <main+0x3c>)
 2000049a:	f001 f953 	bl	20001744 <tinytimber>
+  return 0;
 2000049e:	2300      	movs	r3, #0
+}
 200004a0:	4618      	mov	r0, r3
 200004a2:	bd80      	pop	{r7, pc}
 200004a4:	20001d97 	.word	0x20001d97
@@ -771,11 +858,18 @@ void MusicPlayBJ(Music* self, int noteNr) {
 200006d4:	2000053d 	.word	0x2000053d
 
 200006d8 <ToneGenerate>:
+
+extern Serial sci0;
+#define ARG_UNUSED 0
+#define DAC_TONE (volatile unsigned char*) (0x4000741C)
+
+void ToneGenerate(Tone* self, int unused) {
 200006d8:	b580      	push	{r7, lr}
 200006da:	b084      	sub	sp, #16
 200006dc:	af02      	add	r7, sp, #8
 200006de:	6078      	str	r0, [r7, #4]
 200006e0:	6039      	str	r1, [r7, #0]
+  if (self->running && !self->mute) {
 200006e2:	687b      	ldr	r3, [r7, #4]
 200006e4:	68db      	ldr	r3, [r3, #12]
 200006e6:	2b00      	cmp	r3, #0
@@ -784,11 +878,13 @@ void MusicPlayBJ(Music* self, int noteNr) {
 200006ec:	689b      	ldr	r3, [r3, #8]
 200006ee:	2b00      	cmp	r3, #0
 200006f0:	d110      	bne.n	20000714 <ToneGenerate+0x3c>
+    self->waveStatus ^= 1;
 200006f2:	687b      	ldr	r3, [r7, #4]
 200006f4:	695b      	ldr	r3, [r3, #20]
 200006f6:	f083 0201 	eor.w	r2, r3, #1
 200006fa:	687b      	ldr	r3, [r7, #4]
 200006fc:	615a      	str	r2, [r3, #20]
+    *DAC_TONE = self->waveStatus * self->amplitude;
 200006fe:	687b      	ldr	r3, [r7, #4]
 20000700:	695b      	ldr	r3, [r3, #20]
 20000702:	b2da      	uxtb	r2, r3
@@ -799,6 +895,8 @@ void MusicPlayBJ(Music* self, int noteNr) {
 2000070c:	fb12 f303 	smulbb	r3, r2, r3
 20000710:	b2db      	uxtb	r3, r3
 20000712:	700b      	strb	r3, [r1, #0]
+  }
+  SEND(self->period, self->period * 2, self, ToneGenerate, ARG_UNUSED);
 20000714:	687b      	ldr	r3, [r7, #4]
 20000716:	6918      	ldr	r0, [r3, #16]
 20000718:	687b      	ldr	r3, [r7, #4]
@@ -809,6 +907,7 @@ void MusicPlayBJ(Music* self, int noteNr) {
 20000722:	4b05      	ldr	r3, [pc, #20]	@ (20000738 <ToneGenerate+0x60>)
 20000724:	687a      	ldr	r2, [r7, #4]
 20000726:	f000 fd15 	bl	20001154 <async>
+}
 2000072a:	bf00      	nop
 2000072c:	3708      	adds	r7, #8
 2000072e:	46bd      	mov	sp, r7
@@ -818,16 +917,20 @@ void MusicPlayBJ(Music* self, int noteNr) {
 20000738:	200006d9 	.word	0x200006d9
 
 2000073c <ToneFlip>:
+
+void ToneFlip(Tone* self, int unused){
 2000073c:	b480      	push	{r7}
 2000073e:	b083      	sub	sp, #12
 20000740:	af00      	add	r7, sp, #0
 20000742:	6078      	str	r0, [r7, #4]
 20000744:	6039      	str	r1, [r7, #0]
+  self->waveStatus ^= 1;
 20000746:	687b      	ldr	r3, [r7, #4]
 20000748:	695b      	ldr	r3, [r3, #20]
 2000074a:	f083 0201 	eor.w	r2, r3, #1
 2000074e:	687b      	ldr	r3, [r7, #4]
 20000750:	615a      	str	r2, [r3, #20]
+  *DAC_TONE = self->waveStatus * self->amplitude;
 20000752:	687b      	ldr	r3, [r7, #4]
 20000754:	695b      	ldr	r3, [r3, #20]
 20000756:	b2da      	uxtb	r2, r3
@@ -838,6 +941,7 @@ void MusicPlayBJ(Music* self, int noteNr) {
 20000760:	fb12 f303 	smulbb	r3, r2, r3
 20000764:	b2db      	uxtb	r3, r3
 20000766:	700b      	strb	r3, [r1, #0]
+}
 20000768:	bf00      	nop
 2000076a:	370c      	adds	r7, #12
 2000076c:	46bd      	mov	sp, r7
@@ -846,14 +950,18 @@ void MusicPlayBJ(Music* self, int noteNr) {
 20000774:	4000741c 	.word	0x4000741c
 
 20000778 <ToneSetPeriod>:
+
+void ToneSetPeriod(Tone* self, int period) {
 20000778:	b480      	push	{r7}
 2000077a:	b083      	sub	sp, #12
 2000077c:	af00      	add	r7, sp, #0
 2000077e:	6078      	str	r0, [r7, #4]
 20000780:	6039      	str	r1, [r7, #0]
+  self->period = period;
 20000782:	687b      	ldr	r3, [r7, #4]
 20000784:	683a      	ldr	r2, [r7, #0]
 20000786:	611a      	str	r2, [r3, #16]
+}
 20000788:	bf00      	nop
 2000078a:	370c      	adds	r7, #12
 2000078c:	46bd      	mov	sp, r7
@@ -861,24 +969,31 @@ void MusicPlayBJ(Music* self, int noteNr) {
 20000792:	4770      	bx	lr
 
 20000794 <ToneSetAmplitude>:
+
+void ToneSetAmplitude(Tone* self, int ampl) {
 20000794:	b580      	push	{r7, lr}
 20000796:	b09c      	sub	sp, #112	@ 0x70
 20000798:	af00      	add	r7, sp, #0
 2000079a:	6078      	str	r0, [r7, #4]
 2000079c:	6039      	str	r1, [r7, #0]
+  self->amplitude = ampl;
 2000079e:	687b      	ldr	r3, [r7, #4]
 200007a0:	683a      	ldr	r2, [r7, #0]
 200007a2:	619a      	str	r2, [r3, #24]
+  char buf[100];
+  snprintf(buf, 100, "volume is %d\n", ampl);
 200007a4:	f107 000c 	add.w	r0, r7, #12
 200007a8:	683b      	ldr	r3, [r7, #0]
 200007aa:	4a07      	ldr	r2, [pc, #28]	@ (200007c8 <ToneSetAmplitude+0x34>)
 200007ac:	2164      	movs	r1, #100	@ 0x64
 200007ae:	f006 ff99 	bl	200076e4 <sniprintf>
+  SCI_WRITE(&sci0, buf);
 200007b2:	f107 030c 	add.w	r3, r7, #12
 200007b6:	461a      	mov	r2, r3
 200007b8:	4904      	ldr	r1, [pc, #16]	@ (200007cc <ToneSetAmplitude+0x38>)
 200007ba:	4805      	ldr	r0, [pc, #20]	@ (200007d0 <ToneSetAmplitude+0x3c>)
 200007bc:	f000 fd68 	bl	20001290 <sync>
+}
 200007c0:	bf00      	nop
 200007c2:	3770      	adds	r7, #112	@ 0x70
 200007c4:	46bd      	mov	sp, r7
@@ -888,16 +1003,20 @@ void MusicPlayBJ(Music* self, int noteNr) {
 200007d0:	200090a8 	.word	0x200090a8
 
 200007d4 <ToneToggleRunning>:
+
+void ToneToggleRunning(Tone* self, int unused) {
 200007d4:	b480      	push	{r7}
 200007d6:	b083      	sub	sp, #12
 200007d8:	af00      	add	r7, sp, #0
 200007da:	6078      	str	r0, [r7, #4]
 200007dc:	6039      	str	r1, [r7, #0]
+  self->running ^= 1;
 200007de:	687b      	ldr	r3, [r7, #4]
 200007e0:	68db      	ldr	r3, [r3, #12]
 200007e2:	f083 0201 	eor.w	r2, r3, #1
 200007e6:	687b      	ldr	r3, [r7, #4]
 200007e8:	60da      	str	r2, [r3, #12]
+}
 200007ea:	bf00      	nop
 200007ec:	370c      	adds	r7, #12
 200007ee:	46bd      	mov	sp, r7
@@ -905,16 +1024,21 @@ void MusicPlayBJ(Music* self, int noteNr) {
 200007f4:	4770      	bx	lr
 
 200007f6 <ToneToggleMute>:
+
+void ToneToggleMute(Tone* self, int unused) {
 200007f6:	b580      	push	{r7, lr}
 200007f8:	b09c      	sub	sp, #112	@ 0x70
 200007fa:	af00      	add	r7, sp, #0
 200007fc:	6078      	str	r0, [r7, #4]
 200007fe:	6039      	str	r1, [r7, #0]
+  self->mute ^= 1;
 20000800:	687b      	ldr	r3, [r7, #4]
 20000802:	689b      	ldr	r3, [r3, #8]
 20000804:	f083 0201 	eor.w	r2, r3, #1
 20000808:	687b      	ldr	r3, [r7, #4]
 2000080a:	609a      	str	r2, [r3, #8]
+  char buf[100];
+  if (self->mute) snprintf(buf, 100, "mute\n");
 2000080c:	687b      	ldr	r3, [r7, #4]
 2000080e:	689b      	ldr	r3, [r3, #8]
 20000810:	2b00      	cmp	r3, #0
@@ -925,11 +1049,13 @@ void MusicPlayBJ(Music* self, int noteNr) {
 2000081c:	4618      	mov	r0, r3
 2000081e:	f006 ff61 	bl	200076e4 <sniprintf>
 20000822:	e006      	b.n	20000832 <ToneToggleMute+0x3c>
+  else snprintf(buf, 100, "unmute\n");
 20000824:	f107 030c 	add.w	r3, r7, #12
 20000828:	4a08      	ldr	r2, [pc, #32]	@ (2000084c <ToneToggleMute+0x56>)
 2000082a:	2164      	movs	r1, #100	@ 0x64
 2000082c:	4618      	mov	r0, r3
 2000082e:	f006 ff59 	bl	200076e4 <sniprintf>
+  SCI_WRITE(&sci0, buf);
 20000832:	f107 030c 	add.w	r3, r7, #12
 20000836:	461a      	mov	r2, r3
 20000838:	4905      	ldr	r1, [pc, #20]	@ (20000850 <ToneToggleMute+0x5a>)
@@ -15298,7 +15424,7 @@ void MusicPlayBJ(Music* self, int noteNr) {
 200081e4:	6c612074 	.word	0x6c612074
 200081e8:	65776f6c 	.word	0x65776f6c
 200081ec:	3e202164 	.word	0x3e202164
-200081f0:	0000283a 	.word	0x0000283a
+200081f0:	000a283a 	.word	0x000a283a
 200081f4:	75706e49 	.word	0x75706e49
 200081f8:	65742074 	.word	0x65742074
 200081fc:	206f706d 	.word	0x206f706d
@@ -15306,7 +15432,7 @@ void MusicPlayBJ(Music* self, int noteNr) {
 20008204:	6f6c6c61 	.word	0x6f6c6c61
 20008208:	21646577 	.word	0x21646577
 2000820c:	283a3e20 	.word	0x283a3e20
-20008210:	00000000 	.word	0x00000000
+20008210:	0000000a 	.word	0x0000000a
 20008214:	6c6c6548 	.word	0x6c6c6548
 20008218:	68202c6f 	.word	0x68202c6f
 2000821c:	6f6c6c65 	.word	0x6f6c6c65
