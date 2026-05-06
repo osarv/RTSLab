@@ -35,7 +35,7 @@ void MusicSetKey(Music* self, int key) {
 
 #define WAIT_OVER_BPM (SEC(60) / 16)
 void MusicPlayNote(Music* self, int noteIdx) {
-    SYNC(&tone, ToneSetPeriod, periods[notes[noteIdx] + self->key + 10]);
+    SYNC(&tone, ToneSetPeriod, USEC(periods[notes[noteIdx] + self->key + 10]));
     int noteLen = noteLens[noteIdx];
     int sendPlayNoteBLine = (SEC(60) * noteLen) / 2 / self->tempo;
     int sendPauseNoteBLine = ((SEC(60) * noteLen)  - (WAIT_OVER_BPM * noteLen)) / 2 / self->tempo;
