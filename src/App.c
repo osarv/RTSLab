@@ -3,12 +3,14 @@
 #include "TinyTimber.h"
 #include "canTinyTimber.h"
 #include "sciTinyTimber.h"
+#include "sioTinyTimber.h"
 #include "stdlib.h"
 #include "stdio.h"
 #include "Music.h"
 #include "string.h"
 
 #define ARG_UNUSED 0
+extern SysIO button;
 extern App app;
 extern Tone tone;
 extern Music music;
@@ -119,9 +121,11 @@ void reader(App* self, int c) {
       self->buf[self->len] = '\0';
       int tempo = atoi(self->buf);
       self->len = 0;
-      if (tempo <= 240 && tempo >= 60){
+      if (tempo <= 240 && tempo >= 60) {
         CanSendMsg(MSG_NEW_TEMPO, tempo); 
-        if (self->conductor) SYNC(&music, MusicSetTempo, tempo); break;
+        if (self->conductor) {
+          SYNC(&music, MusicSetTempo, tempo); break;
+        }
       }
       else {
         SCI_WRITE(&sci0, "Input tempo not allowed! >:(\n");
@@ -130,7 +134,8 @@ void reader(App* self, int c) {
   }
 }
 
-void startApp(App *self, int arg) {
+void startApp(App *self, int unused) {
+  SIO_INIT(&button);
   CAN_INIT(&can0);
   SCI_INIT(&sci0);
   SCI_WRITE(&sci0, "Hello, hello...\n");
@@ -138,6 +143,7 @@ void startApp(App *self, int arg) {
 }
 
 int main() {
+  INSTALL(&button, sio_interrupt, SIO_IRQ0);
   INSTALL(&sci0, sci_interrupt, SCI_IRQ0);
   INSTALL(&can0, can_interrupt, CAN_IRQ0);
   TINYTIMBER(&app, startApp, 0);

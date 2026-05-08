@@ -6,4 +6,5 @@ build/obj/src/App.c.o: src/App.c inc/App.h \
  lib/tinytimber/inc/canTinyTimber.h lib/tinytimber/inc/TinyTimber.h \
  lib/md407/inc/stm32f4xx_can.h lib/md407/inc/stm32f4xx.h \
  lib/tinytimber/inc/sciTinyTimber.h lib/md407/inc/stm32f4xx_usart.h \
- inc/Music.h
+ lib/tinytimber/inc/sioTinyTimber.h lib/md407/inc/stm32f4xx_exti.h \
+ lib/md407/inc/stm32f4xx_gpio.h inc/Music.h
