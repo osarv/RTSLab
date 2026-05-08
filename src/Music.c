@@ -35,7 +35,11 @@ void MusicSetKey(Music* self, int key) {
 
 #define WAIT_OVER_BPM (SEC(60) / 16)
 void MusicPlayNote(Music* self, int noteIdx) {
-    if (!self->playing) return;
+    if (!self->playing) {
+        self->canPlayAgain = 1;
+        return;
+    }
+
     SYNC(&tone, ToneSetPeriod, USEC(periods[notes[noteIdx] + self->key + 10]));
     int noteLen = noteLens[noteIdx];
     int sendPlayNoteBLine = (SEC(60) * noteLen) / 2 / self->tempo;
@@ -62,10 +66,12 @@ void MusicMuteUnmute(Music* self, int unused) {
 }
 
 void MusicPlayBJ(Music* self, int noteNr) {
+    if (self->playing || !self->canPlayAgain) return;
     self->playing = 1;
     BEFORE(noteLens[0] / self->tempo, self, MusicPlayNote, 0);
 }
 
 void MusicStopBJ(Music* self, int unused) {
     self->playing = 0;
+    self->canPlayAgain = 0;
 }

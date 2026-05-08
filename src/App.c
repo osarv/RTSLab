@@ -61,8 +61,8 @@ void CANPLoadAcknowledge(CANPayload pLoad) {
 
 void CANPLoadAct(CANPayload pLoad) {
   switch(pLoad.type) {
-    case MSG_START_BJ: ASYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
-    case MSG_STOP_BJ: ASYNC(&music, MusicStopBJ, ARG_UNUSED); break;
+    case MSG_START_BJ: SYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
+    case MSG_STOP_BJ: SYNC(&music, MusicStopBJ, ARG_UNUSED); break;
     case MSG_MUTE_UNMUTE: SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
     case MSG_VOLUME_UP: SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
     case MSG_VOLUME_DOWN: SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
@@ -82,16 +82,14 @@ void receiver(App *self, int unused) {
 
 
 void reader(App* self, int c) {
-  int key;
-  int tempo;
   switch (c) {
-    case 'c': self->conductor = 1; SCI_WRITE(&sci0, "you have entered conductor mode\n"); break;
+    case 'p': CanSendMsg(MSG_START_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
+    case 's': CanSendMsg(MSG_STOP_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicStopBJ, ARG_UNUSED); break;
+    case ',': CanSendMsg(MSG_VOLUME_UP, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
+    case '.': CanSendMsg(MSG_VOLUME_DOWN, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
+    case 'm': CanSendMsg(MSG_MUTE_UNMUTE, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
+    case 'c': self->conductor = 1; SCI_WRITE(&sci0, "you have entered conductor mode\n");
     case 'e': self->conductor = 0; SCI_WRITE(&sci0, "you have entered musician mode\n"); break;
-    case 'p': CanSendMsg(MSG_START_BJ, ARG_UNUSED); break;
-    case 's': CanSendMsg(MSG_STOP_BJ, ARG_UNUSED); break;
-    case ',': CanSendMsg(MSG_VOLUME_UP, ARG_UNUSED); break;
-    case '.': CanSendMsg(MSG_VOLUME_DOWN, ARG_UNUSED); break;
-    case 'm': CanSendMsg(MSG_MUTE_UNMUTE, ARG_UNUSED); break;
     case '0': self->buf[self->len] = c; self->len++; return;
     case '1': self->buf[self->len] = c; self->len++; return;
     case '2': self->buf[self->len] = c; self->len++; return;
@@ -109,11 +107,12 @@ void reader(App* self, int c) {
       self->len = 0;
       if (key <= 5 && key >= -5) {
         CanSendMsg(MSG_NEW_KEY, key); 
+        if (self->conductor) SYNC(&music, MusicSetKey, key);
         break;
       }
       else {
         SCI_WRITE(&sci0, "Input key not allowed! >:(\n");
-        return;
+        break;
       }
 
     case 't':
@@ -122,45 +121,19 @@ void reader(App* self, int c) {
       self->len = 0;
       if (tempo <= 240 && tempo >= 60){
         CanSendMsg(MSG_NEW_TEMPO, tempo); 
-        break;
+        if (self->conductor) SYNC(&music, MusicSetTempo, tempo); break;
       }
       else {
         SCI_WRITE(&sci0, "Input tempo not allowed! >:(\n");
-        return;
+        break;
       } 
-  }
-
-  if (self->conductor) {
-    switch(c) {
-      case 'p': SYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
-      case 's': SYNC(&music, MusicStopBJ, ARG_UNUSED); break;
-      case ',': SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
-      case '.': SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
-      case 'm': SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
-      case 'k': SYNC(&music, MusicSetKey, key); break;
-      case 't': SYNC(&music, MusicSetTempo, tempo); break;
-    }
   }
 }
 
 void startApp(App *self, int arg) {
-  CANMsg msg;
-
   CAN_INIT(&can0);
   SCI_INIT(&sci0);
   SCI_WRITE(&sci0, "Hello, hello...\n");
-
-  msg.msgId = 1;
-  msg.nodeId = 1;
-  msg.length = 6;
-  msg.buff[0] = 'H';
-  msg.buff[1] = 'e';
-  msg.buff[2] = 'l';
-  msg.buff[3] = 'l';
-  msg.buff[4] = 'o';
-  msg.buff[5] = 0;
-  CAN_SEND(&can0, &msg);
-
   ASYNC(&tone, ToneGenerate, ARG_UNUSED);
 }
 
