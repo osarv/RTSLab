@@ -9,7 +9,7 @@
 typedef struct {
   Object super;
   int mode;
-  Timer timer;
+  Timer lastPressTimer;
   int firstPress;
 } Tempo;
 
@@ -17,6 +17,6 @@ typedef struct {
 #define initTempo()                                                              \
   { initObject(), MODE_MOMENTARY, initTimer(), 1 }
 
-void buttonPressed(Tempo* self, int unused);
+void buttonEvent(Tempo* self, int unused);
 
 #endif

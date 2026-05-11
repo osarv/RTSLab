@@ -82,7 +82,6 @@ void receiver(App *self, int unused) {
   if (!self->conductor) CANPLoadAct(pLoad);
 }
 
-
 void reader(App* self, int c) {
   switch (c) {
     case 'p': CanSendMsg(MSG_START_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
