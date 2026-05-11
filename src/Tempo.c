@@ -19,7 +19,10 @@ void printWithIntArg(char* msg, int arg) {
 void checkPressAndHold(Tempo* self, int unused) {
     Time sample = T_SAMPLE(&self->lastPressTimer);
     if (SIO_READ(&button)) return;
-    if (sample >= SEC(2)) SYNC(&music, MusicSetTempo, 120);
+    if (sample >= SEC(2)) {
+        SCI_WRITE(&sci0, "tempo reset to default!\n");
+        SYNC(&music, MusicSetTempo, 120);
+    }
     if (sample >= SEC(1)) {
         self->mode = MODE_PRESS_AND_HOLD;
         SCI_WRITE(&sci0, "press and hold mode entered!\n");
@@ -60,7 +63,7 @@ void buttonEvent(Tempo* self, int unused) {
         Time sample = T_SAMPLE(&self->lastPressTimer);
         printWithIntArg("time held: %d ms\n", TOT_MS_OF(sample));
         self->mode = MODE_MOMENTARY;
-        SCI_WRITE(&sci0, "leaving press and hold\n");
+        SCI_WRITE(&sci0, "leaving press and hold!\n");
 
     }
     else {
@@ -84,5 +87,6 @@ void buttonEvent(Tempo* self, int unused) {
 
         T_RESET(&self->lastPressTimer);
         AFTER(SEC(1), self, checkPressAndHold, ARG_UNUSED);
+        AFTER(SEC(2), self, checkPressAndHold, ARG_UNUSED);
     }
 }
