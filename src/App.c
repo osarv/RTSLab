@@ -60,7 +60,6 @@ void CANPLoadAcknowledge(CANPayload pLoad) {
   }
 }
 
-
 void CANPLoadAct(CANPayload pLoad) {
   switch(pLoad.type) {
     case MSG_START_BJ: SYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
@@ -115,7 +114,6 @@ void reader(App* self, int c) {
         SCI_WRITE(&sci0, "Input key not allowed! >:(\n");
         break;
       }
-
     case 't':
       self->buf[self->len] = '\0';
       int tempo = atoi(self->buf);
@@ -139,6 +137,8 @@ void startApp(App *self, int unused) {
   SCI_INIT(&sci0);
   SCI_WRITE(&sci0, "Hello, hello...\n");
   ASYNC(&tone, ToneGenerate, ARG_UNUSED);
+  SIO_TOGGLE(&button);
+  //SIO_WRITE(&button, 0);
 }
 
 int main() {

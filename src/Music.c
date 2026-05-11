@@ -4,9 +4,11 @@
 #include "Tone.h"
 #include "tinyTimber.h"
 #include "sciTinyTimber.h"
+#include "sioTinyTimber.h"
 
 extern Tone tone;
 extern Serial sci0;
+extern SysIO LED;
 
 #define ARG_UNUSED 0
 typedef enum {
@@ -46,7 +48,10 @@ void MusicPlayNote(Music* self, int noteIdx) {
     int sendPauseNoteBLine = ((SEC(60) * noteLen)  - (WAIT_OVER_BPM * noteLen)) / 2 / self->tempo;
     SYNC(&tone, ToneToggleRunning, ARG_UNUSED);
     SEND(sendPauseNoteBLine, sendPlayNoteBLine, &tone, ToneToggleRunning, ARG_UNUSED);
-    if (noteIdx >= 31) AFTER(sendPlayNoteBLine, self, MusicPlayBJ, ARG_UNUSED);
+    if (noteIdx >= 31) {
+        self->playing = 0;
+        AFTER(sendPlayNoteBLine, self, MusicPlayBJ, ARG_UNUSED);
+    }
     else SEND(sendPlayNoteBLine, 2 * sendPlayNoteBLine, self, MusicPlayNote, noteIdx +1);
 }
 
@@ -66,12 +71,14 @@ void MusicMuteUnmute(Music* self, int unused) {
 }
 
 void MusicPlayBJ(Music* self, int noteNr) {
-    if (self->playing || !self->canPlayAgain) return;
+    if (self->playing || !self->canPlayAgain) {
+        return;
+    }
     self->playing = 1;
     BEFORE(noteLens[0] / self->tempo, self, MusicPlayNote, 0);
 }
 
 void MusicStopBJ(Music* self, int unused) {
     self->playing = 0;
-    self->canPlayAgain = 0;
+    self->canPlayAgain = 1;
 }

@@ -5,4 +5,5 @@ build/obj/src/Music.c.o: src/Music.c inc/Music.h \
  lib/md407/inc/system_stm32f4xx.h inc/Tone.h \
  lib/tinytimber/inc/tinyTimber.h lib/tinytimber/inc/sciTinyTimber.h \
  lib/tinytimber/inc/TinyTimber.h lib/md407/inc/stm32f4xx_usart.h \
- lib/md407/inc/stm32f4xx.h
+ lib/md407/inc/stm32f4xx.h lib/tinytimber/inc/sioTinyTimber.h \
+ lib/md407/inc/stm32f4xx_exti.h lib/md407/inc/stm32f4xx_gpio.h

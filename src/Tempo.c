@@ -31,11 +31,11 @@ int TOT_MS_OF(Time t) {
 }
 
 int samplesCohere(Time history[2], int histCnt, Time sample) {
-        for (int i = 0; i < histCnt; i++) {
-            if (sample - history[i] > MSEC(100)) return 0;
-            if (history[i] - sample > MSEC(100)) return 0;
-        }
-        return 1;
+    for (int i = 0; i < histCnt; i++) {
+        if (sample - history[i] > MSEC(100)) return 0;
+        if (history[i] - sample > MSEC(100)) return 0;
+    }
+    return 1;
 }
 
 Time avgHistory(Time history[3]) {
