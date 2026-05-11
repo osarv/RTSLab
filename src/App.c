@@ -10,7 +10,7 @@
 #include "string.h"
 
 #define ARG_UNUSED 0
-extern SysIO button;
+extern SysIO sio;
 extern App app;
 extern Tone tone;
 extern Music music;
@@ -132,7 +132,7 @@ void reader(App* self, int c) {
 }
 
 void startApp(App *self, int unused) {
-  SIO_INIT(&button);
+  SIO_INIT(&sio);
   CAN_INIT(&can0);
   SCI_INIT(&sci0);
   SCI_WRITE(&sci0, "Hello, hello...\n");
@@ -140,7 +140,7 @@ void startApp(App *self, int unused) {
 }
 
 int main() {
-  INSTALL(&button, sio_interrupt, SIO_IRQ0);
+  INSTALL(&sio, sio_interrupt, SIO_IRQ0);
   INSTALL(&sci0, sci_interrupt, SCI_IRQ0);
   INSTALL(&can0, can_interrupt, CAN_IRQ0);
   TINYTIMBER(&app, startApp, 0);

@@ -8,7 +8,7 @@
 
 extern Tone tone;
 extern Serial sci0;
-extern SysIO button;
+extern SysIO sio;
 
 #define ARG_UNUSED 0
 typedef enum {
@@ -37,7 +37,7 @@ void MusicSetKey(Music* self, int key) {
 
 void toggleLed(SysIO* self, int unused) {
     SCI_WRITE(&sci0, "trying to toggle\n");
-    SIO_TOGGLE(&button);
+    SIO_TOGGLE(&sio);
 }
 
 #define WAIT_OVER_BPM (SEC(60) / 16)
@@ -61,11 +61,11 @@ void MusicPlayNote(Music* self, int noteIdx) {
 
     //toggle LED
     Time halfBeatPeriod = SEC(60) / self->tempo / 2;
-    BEFORE(halfBeatPeriod, &button, toggleLed, ARG_UNUSED);
-    if (noteLen >= 2) SEND(halfBeatPeriod, 2 * halfBeatPeriod, &button, toggleLed, ARG_UNUSED);
+    BEFORE(halfBeatPeriod, &sio, toggleLed, ARG_UNUSED);
+    if (noteLen >= 2) SEND(halfBeatPeriod, 2 * halfBeatPeriod, &sio, toggleLed, ARG_UNUSED);
     if (noteLen >= 4) {
-        SEND(2 * halfBeatPeriod, 3 * halfBeatPeriod, &button, toggleLed, ARG_UNUSED);
-        SEND(3 * halfBeatPeriod, 4 * halfBeatPeriod, &button, toggleLed, ARG_UNUSED);
+        SEND(2 * halfBeatPeriod, 3 * halfBeatPeriod, &sio, toggleLed, ARG_UNUSED);
+        SEND(3 * halfBeatPeriod, 4 * halfBeatPeriod, &sio, toggleLed, ARG_UNUSED);
     }
 }
 

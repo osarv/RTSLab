@@ -7,7 +7,7 @@
 #define ARG_UNUSED 0
 
 extern Serial sci0;
-extern SysIO button;
+extern SysIO sio;
 extern Music music;
 
 void printWithIntArg(char* msg, int arg) {
@@ -18,7 +18,7 @@ void printWithIntArg(char* msg, int arg) {
 
 void checkTempoReset(Tempo* self, int unused) {
     Time sample = T_SAMPLE(&self->lastPressTimer);
-    if (SIO_READ(&button)) return;
+    if (SIO_READ(&sio)) return;
     if (sample >= SEC(2)) {
         SCI_WRITE(&sci0, "tempo reset to default!\n");
         SYNC(&music, MusicSetTempo, 120);
@@ -27,11 +27,11 @@ void checkTempoReset(Tempo* self, int unused) {
 
 void checkPressAndHold(Tempo* self, int unused) {
     Time sample = T_SAMPLE(&self->lastPressTimer);
-    if (SIO_READ(&button)) return;
+    if (SIO_READ(&sio)) return;
     if (sample >= SEC(1)) {
         self->mode = MODE_PRESS_AND_HOLD;
         SCI_WRITE(&sci0, "press and hold mode entered!\n");
-        SIO_TRIG(&button, 1);
+        SIO_TRIG(&sio, 1);
     }
 }
 
@@ -61,9 +61,9 @@ void buttonEvent(Tempo* self, int unused) {
     //reject debounces
     if (sample < MSEC(100)) return;
 
-    if (SIO_READ(&button)) {
+    if (SIO_READ(&sio)) {
         //released
-        SIO_TRIG(&button, 0);
+        SIO_TRIG(&sio, 0);
         if (self->mode == MODE_MOMENTARY) return;
         Time sample = T_SAMPLE(&self->lastPressTimer);
         printWithIntArg("time held: %d ms\n", TOT_MS_OF(sample));

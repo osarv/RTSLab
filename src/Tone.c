@@ -6,7 +6,6 @@
 #include "sioTinyTimber.h"
 
 extern Serial sci0;
-extern SysIO button;
 #define ARG_UNUSED 0
 #define DAC_TONE (volatile unsigned char*) (0x4000741C)
 
