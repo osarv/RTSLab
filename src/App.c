@@ -128,14 +128,14 @@ void reader(App* self, int c) {
         SCI_WRITE(&sci0, "Input tempo not allowed! >:(\n");
         break;
       } 
-  }
+    }
 }
 
 void startApp(App *self, int unused) {
   SIO_INIT(&sio);
   CAN_INIT(&can0);
   SCI_INIT(&sci0);
-  SCI_WRITE(&sci0, "Hello, hello...\n");
+  SIO_WRITE(&sio, 1);
   ASYNC(&tone, ToneGenerate, ARG_UNUSED);
 }
 

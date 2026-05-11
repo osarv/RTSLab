@@ -35,11 +35,6 @@ void MusicSetKey(Music* self, int key) {
     SCI_WRITE(&sci0, buf);
 }
 
-void toggleLed(SysIO* self, int unused) {
-    SCI_WRITE(&sci0, "trying to toggle\n");
-    SIO_TOGGLE(&sio);
-}
-
 #define WAIT_OVER_BPM (SEC(60) / 16)
 void MusicPlayNote(Music* self, int noteIdx) {
     if (!self->playing) {
@@ -61,11 +56,11 @@ void MusicPlayNote(Music* self, int noteIdx) {
 
     //toggle LED
     Time halfBeatPeriod = SEC(60) / self->tempo / 2;
-    BEFORE(halfBeatPeriod, &sio, toggleLed, ARG_UNUSED);
-    if (noteLen >= 2) SEND(halfBeatPeriod, 2 * halfBeatPeriod, &sio, toggleLed, ARG_UNUSED);
+    BEFORE(halfBeatPeriod, &sio, sio_toggle, 0);
+    if (noteLen >= 2) SEND(halfBeatPeriod, 2 * halfBeatPeriod, &sio, sio_toggle, 0);
     if (noteLen >= 4) {
-        SEND(2 * halfBeatPeriod, 3 * halfBeatPeriod, &sio, toggleLed, ARG_UNUSED);
-        SEND(3 * halfBeatPeriod, 4 * halfBeatPeriod, &sio, toggleLed, ARG_UNUSED);
+        SEND(2 * halfBeatPeriod, 3 * halfBeatPeriod, &sio, sio_toggle, 0);
+        SEND(3 * halfBeatPeriod, 4 * halfBeatPeriod, &sio, sio_toggle, 0);
     }
 }
 
@@ -85,6 +80,7 @@ void MusicMuteUnmute(Music* self, int unused) {
 }
 
 void MusicPlayBJ(Music* self, int noteNr) {
+    SIO_WRITE(&sio, 1);
     if (self->playing || !self->canPlayAgain) {
         return;
     }
@@ -93,6 +89,7 @@ void MusicPlayBJ(Music* self, int noteNr) {
 }
 
 void MusicStopBJ(Music* self, int unused) {
+    SIO_WRITE(&sio, 1);
     self->playing = 0;
     self->canPlayAgain = 1;
 }
