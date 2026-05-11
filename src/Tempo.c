@@ -17,6 +17,8 @@ void printWithIntArg(char* msg, int arg) {
 }
 
 void checkTempoReset(Tempo* self, int unused) {
+    Time sample = T_SAMPLE(&self->lastPressTimer);
+    if (SIO_READ(&button)) return;
     if (sample >= SEC(2)) {
         SCI_WRITE(&sci0, "tempo reset to default!\n");
         SYNC(&music, MusicSetTempo, 120);
