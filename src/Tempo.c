@@ -19,6 +19,7 @@ void printWithIntArg(char* msg, int arg) {
 void checkPressAndHold(Tempo* self, int unused) {
     Time sample = T_SAMPLE(&self->lastPressTimer);
     if (SIO_READ(&button)) return;
+    if (sample >= SEC(2)) SYNC(&music, MusicSetTempo, 120);
     if (sample >= SEC(1)) {
         self->mode = MODE_PRESS_AND_HOLD;
         SCI_WRITE(&sci0, "press and hold mode entered!\n");
