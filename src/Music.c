@@ -8,7 +8,7 @@
 
 extern Tone tone;
 extern Serial sci0;
-extern SysIO LED;
+extern SysIO button;
 
 #define ARG_UNUSED 0
 typedef enum {
@@ -35,6 +35,11 @@ void MusicSetKey(Music* self, int key) {
     SCI_WRITE(&sci0, buf);
 }
 
+void toggleLed(SysIO* self, int unused) {
+    SCI_WRITE(&sci0, "trying to toggle\n");
+    SIO_TOGGLE(&button);
+}
+
 #define WAIT_OVER_BPM (SEC(60) / 16)
 void MusicPlayNote(Music* self, int noteIdx) {
     if (!self->playing) {
@@ -53,6 +58,15 @@ void MusicPlayNote(Music* self, int noteIdx) {
         AFTER(sendPlayNoteBLine, self, MusicPlayBJ, ARG_UNUSED);
     }
     else SEND(sendPlayNoteBLine, 2 * sendPlayNoteBLine, self, MusicPlayNote, noteIdx +1);
+
+    //toggle LED
+    Time halfBeatPeriod = SEC(60) / self->tempo / 2;
+    BEFORE(halfBeatPeriod, &button, toggleLed, ARG_UNUSED);
+    if (noteLen >= 2) SEND(halfBeatPeriod, 2 * halfBeatPeriod, &button, toggleLed, ARG_UNUSED);
+    if (noteLen >= 4) {
+        SEND(2 * halfBeatPeriod, 3 * halfBeatPeriod, &button, toggleLed, ARG_UNUSED);
+        SEND(3 * halfBeatPeriod, 4 * halfBeatPeriod, &button, toggleLed, ARG_UNUSED);
+    }
 }
 
 #define MAX_VOL 15

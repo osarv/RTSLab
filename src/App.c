@@ -137,8 +137,6 @@ void startApp(App *self, int unused) {
   SCI_INIT(&sci0);
   SCI_WRITE(&sci0, "Hello, hello...\n");
   ASYNC(&tone, ToneGenerate, ARG_UNUSED);
-  SIO_TOGGLE(&button);
-  //SIO_WRITE(&button, 0);
 }
 
 int main() {
