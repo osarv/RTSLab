@@ -22,7 +22,7 @@ const NoteLen noteLens[] = {QUARTER, QUARTER, QUARTER, QUARTER, QUARTER, QUARTER
 void MusicSetTempo(Music* self, int tempo) {
     self->tempo = tempo;
     char buf[100];
-    snprintf(buf, 100, "new tempo: %d\n", tempo);
+    snprintf(buf, 100, "new tempo: %d bpm\n", tempo);
     SCI_WRITE(&sci0, buf);
 }
 

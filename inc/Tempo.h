@@ -11,11 +11,13 @@ typedef struct {
   int mode;
   Timer lastPressTimer;
   int firstPress;
+  int histCnt;
+  Time history[3];
 } Tempo;
 
 
 #define initTempo()                                                              \
-  { initObject(), MODE_MOMENTARY, initTimer(), 1 }
+  { initObject(), MODE_MOMENTARY, initTimer(), 1, 0, {0} }
 
 void buttonEvent(Tempo* self, int unused);
 
