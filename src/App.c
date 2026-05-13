@@ -32,13 +32,13 @@ typedef struct {
   int val;
 } CANPayload;
 
-CANPayload unpackCANMsg(CANMsg msg) {
+CANPayload CANUnpackMsg(CANMsg msg) {
   CANPayload pLoad;
   memcpy(&pLoad, &msg.buff, sizeof(CANPayload));
   return pLoad;
 }
 
-void CanSendMsg(CANMsgType type, int val) {
+void CANSendMsg(CANMsgType type, int val) {
   CANMsg msg;
   msg.msgId = 1;
   msg.nodeId = 1;
@@ -76,19 +76,19 @@ void receiver(App *self, int unused) {
   CANMsg msg;
   CAN_RECEIVE(&can0, &msg);
   SCI_WRITE(&sci0, "Can msg received: ");
-  CANPayload pLoad = unpackCANMsg(msg);
+  CANPayload pLoad = CANUnpackMsg(msg);
   CANPLoadAcknowledge(pLoad);
   if (!self->conductor) CANPLoadAct(pLoad);
 }
 
 void reader(App* self, int c) {
   switch (c) {
-    case 'p': CanSendMsg(MSG_START_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
-    case 's': CanSendMsg(MSG_STOP_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicStopBJ, ARG_UNUSED); break;
-    case ',': CanSendMsg(MSG_VOLUME_UP, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
-    case '.': CanSendMsg(MSG_VOLUME_DOWN, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
-    case 'm': CanSendMsg(MSG_MUTE_UNMUTE, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
-    case 'c': self->conductor = 1; SCI_WRITE(&sci0, "you have entered conductor mode\n");
+    case 'p': CANSendMsg(MSG_START_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
+    case 's': CANSendMsg(MSG_STOP_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicStopBJ, ARG_UNUSED); break;
+    case ',': CANSendMsg(MSG_VOLUME_UP, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
+    case '.': CANSendMsg(MSG_VOLUME_DOWN, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
+    case 'm': CANSendMsg(MSG_MUTE_UNMUTE, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
+    case 'c': self->conductor = 1; SCI_WRITE(&sci0, "you have entered conductor mode\n"); break;
     case 'e': self->conductor = 0; SCI_WRITE(&sci0, "you have entered musician mode\n"); break;
     case '0': self->buf[self->len] = c; self->len++; return;
     case '1': self->buf[self->len] = c; self->len++; return;
@@ -106,7 +106,7 @@ void reader(App* self, int c) {
       int key = atoi(self->buf);
       self->len = 0;
       if (key <= 5 && key >= -5) {
-        CanSendMsg(MSG_NEW_KEY, key); 
+        CANSendMsg(MSG_NEW_KEY, key); 
         if (self->conductor) SYNC(&music, MusicSetKey, key);
         break;
       }
@@ -119,7 +119,7 @@ void reader(App* self, int c) {
       int tempo = atoi(self->buf);
       self->len = 0;
       if (tempo <= 240 && tempo >= 60) {
-        CanSendMsg(MSG_NEW_TEMPO, tempo); 
+        CANSendMsg(MSG_NEW_TEMPO, tempo); 
         if (self->conductor) {
           SYNC(&music, MusicSetTempo, tempo); break;
         }

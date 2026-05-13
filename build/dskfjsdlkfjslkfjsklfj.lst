@@ -27,13 +27,13 @@ void startup(void) {
 20000016:	0000      	.short	0x0000
 20000018:	2001c000 	.word	0x2001c000
 
-2000001c <unpackCANMsg>:
+2000001c <CANUnpackMsg>:
 typedef struct {
   CANMsgType type;
   int val;
 } CANPayload;
 
-CANPayload unpackCANMsg(CANMsg msg) {
+CANPayload CANUnpackMsg(CANMsg msg) {
 2000001c:	b480      	push	{r7}
 2000001e:	b087      	sub	sp, #28
 20000020:	af00      	add	r7, sp, #0
@@ -60,9 +60,9 @@ CANPayload unpackCANMsg(CANMsg msg) {
 2000004c:	f85d 7b04 	ldr.w	r7, [sp], #4
 20000050:	4770      	bx	lr
 
-20000052 <CanSendMsg>:
+20000052 <CANSendMsg>:
 
-void CanSendMsg(CANMsgType type, int val) {
+void CANSendMsg(CANMsgType type, int val) {
 20000052:	b580      	push	{r7, lr}
 20000054:	b088      	sub	sp, #32
 20000056:	af00      	add	r7, sp, #0
@@ -93,8 +93,8 @@ void CanSendMsg(CANMsgType type, int val) {
   CAN_SEND(&can0, &msg);
 20000080:	f107 0314 	add.w	r3, r7, #20
 20000084:	461a      	mov	r2, r3
-20000086:	4904      	ldr	r1, [pc, #16]	@ (20000098 <CanSendMsg+0x46>)
-20000088:	4804      	ldr	r0, [pc, #16]	@ (2000009c <CanSendMsg+0x4a>)
+20000086:	4904      	ldr	r1, [pc, #16]	@ (20000098 <CANSendMsg+0x46>)
+20000088:	4804      	ldr	r0, [pc, #16]	@ (2000009c <CANSendMsg+0x4a>)
 2000008a:	f001 fc97 	bl	200019bc <sync>
 }
 2000008e:	bf00      	nop
@@ -293,11 +293,11 @@ void receiver(App *self, int unused) {
 20000234:	4912      	ldr	r1, [pc, #72]	@ (20000280 <receiver+0x68>)
 20000236:	4813      	ldr	r0, [pc, #76]	@ (20000284 <receiver+0x6c>)
 20000238:	f001 fbc0 	bl	200019bc <sync>
-  CANPayload pLoad = unpackCANMsg(msg);
+  CANPayload pLoad = CANUnpackMsg(msg);
 2000023c:	f107 000c 	add.w	r0, r7, #12
 20000240:	f107 0314 	add.w	r3, r7, #20
 20000244:	cb0e      	ldmia	r3, {r1, r2, r3}
-20000246:	f7ff fee9 	bl	2000001c <unpackCANMsg>
+20000246:	f7ff fee9 	bl	2000001c <CANUnpackMsg>
   CANPLoadAcknowledge(pLoad);
 2000024a:	f107 030c 	add.w	r3, r7, #12
 2000024e:	e893 0003 	ldmia.w	r3, {r0, r1}
@@ -339,19 +339,19 @@ void reader(App* self, int c) {
 2000029e:	f852 f023 	ldr.w	pc, [r2, r3, lsl #2]
 200002a2:	bf00      	nop
 200002a4:	20000405 	.word	0x20000405
-200002a8:	2000059d 	.word	0x2000059d
+200002a8:	2000059f 	.word	0x2000059f
 200002ac:	20000423 	.word	0x20000423
 200002b0:	200006ab 	.word	0x200006ab
-200002b4:	20000485 	.word	0x20000485
-200002b8:	200004a1 	.word	0x200004a1
-200002bc:	200004bd 	.word	0x200004bd
-200002c0:	200004d9 	.word	0x200004d9
-200002c4:	200004f5 	.word	0x200004f5
-200002c8:	20000511 	.word	0x20000511
-200002cc:	2000052d 	.word	0x2000052d
-200002d0:	20000549 	.word	0x20000549
-200002d4:	20000565 	.word	0x20000565
-200002d8:	20000581 	.word	0x20000581
+200002b4:	20000487 	.word	0x20000487
+200002b8:	200004a3 	.word	0x200004a3
+200002bc:	200004bf 	.word	0x200004bf
+200002c0:	200004db 	.word	0x200004db
+200002c4:	200004f7 	.word	0x200004f7
+200002c8:	20000513 	.word	0x20000513
+200002cc:	2000052f 	.word	0x2000052f
+200002d0:	2000054b 	.word	0x2000054b
+200002d4:	20000567 	.word	0x20000567
+200002d8:	20000583 	.word	0x20000583
 200002dc:	200006ab 	.word	0x200006ab
 200002e0:	200006ab 	.word	0x200006ab
 200002e4:	200006ab 	.word	0x200006ab
@@ -395,13 +395,13 @@ void reader(App* self, int c) {
 2000037c:	200006ab 	.word	0x200006ab
 20000380:	2000045f 	.word	0x2000045f
 20000384:	200006ab 	.word	0x200006ab
-20000388:	20000471 	.word	0x20000471
+20000388:	20000473 	.word	0x20000473
 2000038c:	200006ab 	.word	0x200006ab
 20000390:	200006ab 	.word	0x200006ab
 20000394:	200006ab 	.word	0x200006ab
 20000398:	200006ab 	.word	0x200006ab
 2000039c:	200006ab 	.word	0x200006ab
-200003a0:	200005b9 	.word	0x200005b9
+200003a0:	200005bb 	.word	0x200005bb
 200003a4:	200006ab 	.word	0x200006ab
 200003a8:	20000441 	.word	0x20000441
 200003ac:	200006ab 	.word	0x200006ab
@@ -411,10 +411,10 @@ void reader(App* self, int c) {
 200003bc:	200006ab 	.word	0x200006ab
 200003c0:	200003e7 	.word	0x200003e7
 200003c4:	20000641 	.word	0x20000641
-    case 'p': CanSendMsg(MSG_START_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
+    case 'p': CANSendMsg(MSG_START_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
 200003c8:	2100      	movs	r1, #0
 200003ca:	2000      	movs	r0, #0
-200003cc:	f7ff fe41 	bl	20000052 <CanSendMsg>
+200003cc:	f7ff fe41 	bl	20000052 <CANSendMsg>
 200003d0:	687b      	ldr	r3, [r7, #4]
 200003d2:	68db      	ldr	r3, [r3, #12]
 200003d4:	2b00      	cmp	r3, #0
@@ -424,10 +424,10 @@ void reader(App* self, int c) {
 200003de:	488d      	ldr	r0, [pc, #564]	@ (20000614 <reader+0x38c>)
 200003e0:	f001 faec 	bl	200019bc <sync>
 200003e4:	e156      	b.n	20000694 <reader+0x40c>
-    case 's': CanSendMsg(MSG_STOP_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicStopBJ, ARG_UNUSED); break;
+    case 's': CANSendMsg(MSG_STOP_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicStopBJ, ARG_UNUSED); break;
 200003e6:	2100      	movs	r1, #0
 200003e8:	2001      	movs	r0, #1
-200003ea:	f7ff fe32 	bl	20000052 <CanSendMsg>
+200003ea:	f7ff fe32 	bl	20000052 <CANSendMsg>
 200003ee:	687b      	ldr	r3, [r7, #4]
 200003f0:	68db      	ldr	r3, [r3, #12]
 200003f2:	2b00      	cmp	r3, #0
@@ -437,10 +437,10 @@ void reader(App* self, int c) {
 200003fc:	4885      	ldr	r0, [pc, #532]	@ (20000614 <reader+0x38c>)
 200003fe:	f001 fadd 	bl	200019bc <sync>
 20000402:	e149      	b.n	20000698 <reader+0x410>
-    case ',': CanSendMsg(MSG_VOLUME_UP, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
+    case ',': CANSendMsg(MSG_VOLUME_UP, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
 20000404:	2100      	movs	r1, #0
 20000406:	2003      	movs	r0, #3
-20000408:	f7ff fe23 	bl	20000052 <CanSendMsg>
+20000408:	f7ff fe23 	bl	20000052 <CANSendMsg>
 2000040c:	687b      	ldr	r3, [r7, #4]
 2000040e:	68db      	ldr	r3, [r3, #12]
 20000410:	2b00      	cmp	r3, #0
@@ -450,10 +450,10 @@ void reader(App* self, int c) {
 2000041a:	487e      	ldr	r0, [pc, #504]	@ (20000614 <reader+0x38c>)
 2000041c:	f001 face 	bl	200019bc <sync>
 20000420:	e13c      	b.n	2000069c <reader+0x414>
-    case '.': CanSendMsg(MSG_VOLUME_DOWN, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
+    case '.': CANSendMsg(MSG_VOLUME_DOWN, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
 20000422:	2100      	movs	r1, #0
 20000424:	2004      	movs	r0, #4
-20000426:	f7ff fe14 	bl	20000052 <CanSendMsg>
+20000426:	f7ff fe14 	bl	20000052 <CANSendMsg>
 2000042a:	687b      	ldr	r3, [r7, #4]
 2000042c:	68db      	ldr	r3, [r3, #12]
 2000042e:	2b00      	cmp	r3, #0
@@ -463,10 +463,10 @@ void reader(App* self, int c) {
 20000438:	4876      	ldr	r0, [pc, #472]	@ (20000614 <reader+0x38c>)
 2000043a:	f001 fabf 	bl	200019bc <sync>
 2000043e:	e12f      	b.n	200006a0 <reader+0x418>
-    case 'm': CanSendMsg(MSG_MUTE_UNMUTE, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
+    case 'm': CANSendMsg(MSG_MUTE_UNMUTE, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
 20000440:	2100      	movs	r1, #0
 20000442:	2002      	movs	r0, #2
-20000444:	f7ff fe05 	bl	20000052 <CanSendMsg>
+20000444:	f7ff fe05 	bl	20000052 <CANSendMsg>
 20000448:	687b      	ldr	r3, [r7, #4]
 2000044a:	68db      	ldr	r3, [r3, #12]
 2000044c:	2b00      	cmp	r3, #0
@@ -476,7 +476,7 @@ void reader(App* self, int c) {
 20000456:	486f      	ldr	r0, [pc, #444]	@ (20000614 <reader+0x38c>)
 20000458:	f001 fab0 	bl	200019bc <sync>
 2000045c:	e122      	b.n	200006a4 <reader+0x41c>
-    case 'c': self->conductor = 1; SCI_WRITE(&sci0, "you have entered conductor mode\n");
+    case 'c': self->conductor = 1; SCI_WRITE(&sci0, "you have entered conductor mode\n"); break;
 2000045e:	687b      	ldr	r3, [r7, #4]
 20000460:	2201      	movs	r2, #1
 20000462:	60da      	str	r2, [r3, #12]
@@ -485,232 +485,232 @@ void reader(App* self, int c) {
 20000468:	4970      	ldr	r1, [pc, #448]	@ (2000062c <reader+0x3a4>)
 2000046a:	4871      	ldr	r0, [pc, #452]	@ (20000630 <reader+0x3a8>)
 2000046c:	f001 faa6 	bl	200019bc <sync>
+20000470:	e11b      	b.n	200006aa <reader+0x422>
     case 'e': self->conductor = 0; SCI_WRITE(&sci0, "you have entered musician mode\n"); break;
-20000470:	687b      	ldr	r3, [r7, #4]
-20000472:	2200      	movs	r2, #0
-20000474:	60da      	str	r2, [r3, #12]
-20000476:	4b6f      	ldr	r3, [pc, #444]	@ (20000634 <reader+0x3ac>)
-20000478:	461a      	mov	r2, r3
-2000047a:	496c      	ldr	r1, [pc, #432]	@ (2000062c <reader+0x3a4>)
-2000047c:	486c      	ldr	r0, [pc, #432]	@ (20000630 <reader+0x3a8>)
-2000047e:	f001 fa9d 	bl	200019bc <sync>
-20000482:	e112      	b.n	200006aa <reader+0x422>
+20000472:	687b      	ldr	r3, [r7, #4]
+20000474:	2200      	movs	r2, #0
+20000476:	60da      	str	r2, [r3, #12]
+20000478:	4b6e      	ldr	r3, [pc, #440]	@ (20000634 <reader+0x3ac>)
+2000047a:	461a      	mov	r2, r3
+2000047c:	496b      	ldr	r1, [pc, #428]	@ (2000062c <reader+0x3a4>)
+2000047e:	486c      	ldr	r0, [pc, #432]	@ (20000630 <reader+0x3a8>)
+20000480:	f001 fa9c 	bl	200019bc <sync>
+20000484:	e111      	b.n	200006aa <reader+0x422>
     case '0': self->buf[self->len] = c; self->len++; return;
-20000484:	687b      	ldr	r3, [r7, #4]
-20000486:	689b      	ldr	r3, [r3, #8]
-20000488:	683a      	ldr	r2, [r7, #0]
-2000048a:	b2d1      	uxtb	r1, r2
-2000048c:	687a      	ldr	r2, [r7, #4]
-2000048e:	4413      	add	r3, r2
-20000490:	460a      	mov	r2, r1
-20000492:	741a      	strb	r2, [r3, #16]
-20000494:	687b      	ldr	r3, [r7, #4]
-20000496:	689b      	ldr	r3, [r3, #8]
-20000498:	1c5a      	adds	r2, r3, #1
-2000049a:	687b      	ldr	r3, [r7, #4]
-2000049c:	609a      	str	r2, [r3, #8]
-2000049e:	e104      	b.n	200006aa <reader+0x422>
+20000486:	687b      	ldr	r3, [r7, #4]
+20000488:	689b      	ldr	r3, [r3, #8]
+2000048a:	683a      	ldr	r2, [r7, #0]
+2000048c:	b2d1      	uxtb	r1, r2
+2000048e:	687a      	ldr	r2, [r7, #4]
+20000490:	4413      	add	r3, r2
+20000492:	460a      	mov	r2, r1
+20000494:	741a      	strb	r2, [r3, #16]
+20000496:	687b      	ldr	r3, [r7, #4]
+20000498:	689b      	ldr	r3, [r3, #8]
+2000049a:	1c5a      	adds	r2, r3, #1
+2000049c:	687b      	ldr	r3, [r7, #4]
+2000049e:	609a      	str	r2, [r3, #8]
+200004a0:	e103      	b.n	200006aa <reader+0x422>
     case '1': self->buf[self->len] = c; self->len++; return;
-200004a0:	687b      	ldr	r3, [r7, #4]
-200004a2:	689b      	ldr	r3, [r3, #8]
-200004a4:	683a      	ldr	r2, [r7, #0]
-200004a6:	b2d1      	uxtb	r1, r2
-200004a8:	687a      	ldr	r2, [r7, #4]
-200004aa:	4413      	add	r3, r2
-200004ac:	460a      	mov	r2, r1
-200004ae:	741a      	strb	r2, [r3, #16]
-200004b0:	687b      	ldr	r3, [r7, #4]
-200004b2:	689b      	ldr	r3, [r3, #8]
-200004b4:	1c5a      	adds	r2, r3, #1
-200004b6:	687b      	ldr	r3, [r7, #4]
-200004b8:	609a      	str	r2, [r3, #8]
-200004ba:	e0f6      	b.n	200006aa <reader+0x422>
+200004a2:	687b      	ldr	r3, [r7, #4]
+200004a4:	689b      	ldr	r3, [r3, #8]
+200004a6:	683a      	ldr	r2, [r7, #0]
+200004a8:	b2d1      	uxtb	r1, r2
+200004aa:	687a      	ldr	r2, [r7, #4]
+200004ac:	4413      	add	r3, r2
+200004ae:	460a      	mov	r2, r1
+200004b0:	741a      	strb	r2, [r3, #16]
+200004b2:	687b      	ldr	r3, [r7, #4]
+200004b4:	689b      	ldr	r3, [r3, #8]
+200004b6:	1c5a      	adds	r2, r3, #1
+200004b8:	687b      	ldr	r3, [r7, #4]
+200004ba:	609a      	str	r2, [r3, #8]
+200004bc:	e0f5      	b.n	200006aa <reader+0x422>
     case '2': self->buf[self->len] = c; self->len++; return;
-200004bc:	687b      	ldr	r3, [r7, #4]
-200004be:	689b      	ldr	r3, [r3, #8]
-200004c0:	683a      	ldr	r2, [r7, #0]
-200004c2:	b2d1      	uxtb	r1, r2
-200004c4:	687a      	ldr	r2, [r7, #4]
-200004c6:	4413      	add	r3, r2
-200004c8:	460a      	mov	r2, r1
-200004ca:	741a      	strb	r2, [r3, #16]
-200004cc:	687b      	ldr	r3, [r7, #4]
-200004ce:	689b      	ldr	r3, [r3, #8]
-200004d0:	1c5a      	adds	r2, r3, #1
-200004d2:	687b      	ldr	r3, [r7, #4]
-200004d4:	609a      	str	r2, [r3, #8]
-200004d6:	e0e8      	b.n	200006aa <reader+0x422>
+200004be:	687b      	ldr	r3, [r7, #4]
+200004c0:	689b      	ldr	r3, [r3, #8]
+200004c2:	683a      	ldr	r2, [r7, #0]
+200004c4:	b2d1      	uxtb	r1, r2
+200004c6:	687a      	ldr	r2, [r7, #4]
+200004c8:	4413      	add	r3, r2
+200004ca:	460a      	mov	r2, r1
+200004cc:	741a      	strb	r2, [r3, #16]
+200004ce:	687b      	ldr	r3, [r7, #4]
+200004d0:	689b      	ldr	r3, [r3, #8]
+200004d2:	1c5a      	adds	r2, r3, #1
+200004d4:	687b      	ldr	r3, [r7, #4]
+200004d6:	609a      	str	r2, [r3, #8]
+200004d8:	e0e7      	b.n	200006aa <reader+0x422>
     case '3': self->buf[self->len] = c; self->len++; return;
-200004d8:	687b      	ldr	r3, [r7, #4]
-200004da:	689b      	ldr	r3, [r3, #8]
-200004dc:	683a      	ldr	r2, [r7, #0]
-200004de:	b2d1      	uxtb	r1, r2
-200004e0:	687a      	ldr	r2, [r7, #4]
-200004e2:	4413      	add	r3, r2
-200004e4:	460a      	mov	r2, r1
-200004e6:	741a      	strb	r2, [r3, #16]
-200004e8:	687b      	ldr	r3, [r7, #4]
-200004ea:	689b      	ldr	r3, [r3, #8]
-200004ec:	1c5a      	adds	r2, r3, #1
-200004ee:	687b      	ldr	r3, [r7, #4]
-200004f0:	609a      	str	r2, [r3, #8]
-200004f2:	e0da      	b.n	200006aa <reader+0x422>
+200004da:	687b      	ldr	r3, [r7, #4]
+200004dc:	689b      	ldr	r3, [r3, #8]
+200004de:	683a      	ldr	r2, [r7, #0]
+200004e0:	b2d1      	uxtb	r1, r2
+200004e2:	687a      	ldr	r2, [r7, #4]
+200004e4:	4413      	add	r3, r2
+200004e6:	460a      	mov	r2, r1
+200004e8:	741a      	strb	r2, [r3, #16]
+200004ea:	687b      	ldr	r3, [r7, #4]
+200004ec:	689b      	ldr	r3, [r3, #8]
+200004ee:	1c5a      	adds	r2, r3, #1
+200004f0:	687b      	ldr	r3, [r7, #4]
+200004f2:	609a      	str	r2, [r3, #8]
+200004f4:	e0d9      	b.n	200006aa <reader+0x422>
     case '4': self->buf[self->len] = c; self->len++; return;
-200004f4:	687b      	ldr	r3, [r7, #4]
-200004f6:	689b      	ldr	r3, [r3, #8]
-200004f8:	683a      	ldr	r2, [r7, #0]
-200004fa:	b2d1      	uxtb	r1, r2
-200004fc:	687a      	ldr	r2, [r7, #4]
-200004fe:	4413      	add	r3, r2
-20000500:	460a      	mov	r2, r1
-20000502:	741a      	strb	r2, [r3, #16]
-20000504:	687b      	ldr	r3, [r7, #4]
-20000506:	689b      	ldr	r3, [r3, #8]
-20000508:	1c5a      	adds	r2, r3, #1
-2000050a:	687b      	ldr	r3, [r7, #4]
-2000050c:	609a      	str	r2, [r3, #8]
-2000050e:	e0cc      	b.n	200006aa <reader+0x422>
+200004f6:	687b      	ldr	r3, [r7, #4]
+200004f8:	689b      	ldr	r3, [r3, #8]
+200004fa:	683a      	ldr	r2, [r7, #0]
+200004fc:	b2d1      	uxtb	r1, r2
+200004fe:	687a      	ldr	r2, [r7, #4]
+20000500:	4413      	add	r3, r2
+20000502:	460a      	mov	r2, r1
+20000504:	741a      	strb	r2, [r3, #16]
+20000506:	687b      	ldr	r3, [r7, #4]
+20000508:	689b      	ldr	r3, [r3, #8]
+2000050a:	1c5a      	adds	r2, r3, #1
+2000050c:	687b      	ldr	r3, [r7, #4]
+2000050e:	609a      	str	r2, [r3, #8]
+20000510:	e0cb      	b.n	200006aa <reader+0x422>
     case '5': self->buf[self->len] = c; self->len++; return;
-20000510:	687b      	ldr	r3, [r7, #4]
-20000512:	689b      	ldr	r3, [r3, #8]
-20000514:	683a      	ldr	r2, [r7, #0]
-20000516:	b2d1      	uxtb	r1, r2
-20000518:	687a      	ldr	r2, [r7, #4]
-2000051a:	4413      	add	r3, r2
-2000051c:	460a      	mov	r2, r1
-2000051e:	741a      	strb	r2, [r3, #16]
-20000520:	687b      	ldr	r3, [r7, #4]
-20000522:	689b      	ldr	r3, [r3, #8]
-20000524:	1c5a      	adds	r2, r3, #1
-20000526:	687b      	ldr	r3, [r7, #4]
-20000528:	609a      	str	r2, [r3, #8]
-2000052a:	e0be      	b.n	200006aa <reader+0x422>
+20000512:	687b      	ldr	r3, [r7, #4]
+20000514:	689b      	ldr	r3, [r3, #8]
+20000516:	683a      	ldr	r2, [r7, #0]
+20000518:	b2d1      	uxtb	r1, r2
+2000051a:	687a      	ldr	r2, [r7, #4]
+2000051c:	4413      	add	r3, r2
+2000051e:	460a      	mov	r2, r1
+20000520:	741a      	strb	r2, [r3, #16]
+20000522:	687b      	ldr	r3, [r7, #4]
+20000524:	689b      	ldr	r3, [r3, #8]
+20000526:	1c5a      	adds	r2, r3, #1
+20000528:	687b      	ldr	r3, [r7, #4]
+2000052a:	609a      	str	r2, [r3, #8]
+2000052c:	e0bd      	b.n	200006aa <reader+0x422>
     case '6': self->buf[self->len] = c; self->len++; return;
-2000052c:	687b      	ldr	r3, [r7, #4]
-2000052e:	689b      	ldr	r3, [r3, #8]
-20000530:	683a      	ldr	r2, [r7, #0]
-20000532:	b2d1      	uxtb	r1, r2
-20000534:	687a      	ldr	r2, [r7, #4]
-20000536:	4413      	add	r3, r2
-20000538:	460a      	mov	r2, r1
-2000053a:	741a      	strb	r2, [r3, #16]
-2000053c:	687b      	ldr	r3, [r7, #4]
-2000053e:	689b      	ldr	r3, [r3, #8]
-20000540:	1c5a      	adds	r2, r3, #1
-20000542:	687b      	ldr	r3, [r7, #4]
-20000544:	609a      	str	r2, [r3, #8]
-20000546:	e0b0      	b.n	200006aa <reader+0x422>
+2000052e:	687b      	ldr	r3, [r7, #4]
+20000530:	689b      	ldr	r3, [r3, #8]
+20000532:	683a      	ldr	r2, [r7, #0]
+20000534:	b2d1      	uxtb	r1, r2
+20000536:	687a      	ldr	r2, [r7, #4]
+20000538:	4413      	add	r3, r2
+2000053a:	460a      	mov	r2, r1
+2000053c:	741a      	strb	r2, [r3, #16]
+2000053e:	687b      	ldr	r3, [r7, #4]
+20000540:	689b      	ldr	r3, [r3, #8]
+20000542:	1c5a      	adds	r2, r3, #1
+20000544:	687b      	ldr	r3, [r7, #4]
+20000546:	609a      	str	r2, [r3, #8]
+20000548:	e0af      	b.n	200006aa <reader+0x422>
     case '7': self->buf[self->len] = c; self->len++; return;
-20000548:	687b      	ldr	r3, [r7, #4]
-2000054a:	689b      	ldr	r3, [r3, #8]
-2000054c:	683a      	ldr	r2, [r7, #0]
-2000054e:	b2d1      	uxtb	r1, r2
-20000550:	687a      	ldr	r2, [r7, #4]
-20000552:	4413      	add	r3, r2
-20000554:	460a      	mov	r2, r1
-20000556:	741a      	strb	r2, [r3, #16]
-20000558:	687b      	ldr	r3, [r7, #4]
-2000055a:	689b      	ldr	r3, [r3, #8]
-2000055c:	1c5a      	adds	r2, r3, #1
-2000055e:	687b      	ldr	r3, [r7, #4]
-20000560:	609a      	str	r2, [r3, #8]
-20000562:	e0a2      	b.n	200006aa <reader+0x422>
+2000054a:	687b      	ldr	r3, [r7, #4]
+2000054c:	689b      	ldr	r3, [r3, #8]
+2000054e:	683a      	ldr	r2, [r7, #0]
+20000550:	b2d1      	uxtb	r1, r2
+20000552:	687a      	ldr	r2, [r7, #4]
+20000554:	4413      	add	r3, r2
+20000556:	460a      	mov	r2, r1
+20000558:	741a      	strb	r2, [r3, #16]
+2000055a:	687b      	ldr	r3, [r7, #4]
+2000055c:	689b      	ldr	r3, [r3, #8]
+2000055e:	1c5a      	adds	r2, r3, #1
+20000560:	687b      	ldr	r3, [r7, #4]
+20000562:	609a      	str	r2, [r3, #8]
+20000564:	e0a1      	b.n	200006aa <reader+0x422>
     case '8': self->buf[self->len] = c; self->len++; return;
-20000564:	687b      	ldr	r3, [r7, #4]
-20000566:	689b      	ldr	r3, [r3, #8]
-20000568:	683a      	ldr	r2, [r7, #0]
-2000056a:	b2d1      	uxtb	r1, r2
-2000056c:	687a      	ldr	r2, [r7, #4]
-2000056e:	4413      	add	r3, r2
-20000570:	460a      	mov	r2, r1
-20000572:	741a      	strb	r2, [r3, #16]
-20000574:	687b      	ldr	r3, [r7, #4]
-20000576:	689b      	ldr	r3, [r3, #8]
-20000578:	1c5a      	adds	r2, r3, #1
-2000057a:	687b      	ldr	r3, [r7, #4]
-2000057c:	609a      	str	r2, [r3, #8]
-2000057e:	e094      	b.n	200006aa <reader+0x422>
+20000566:	687b      	ldr	r3, [r7, #4]
+20000568:	689b      	ldr	r3, [r3, #8]
+2000056a:	683a      	ldr	r2, [r7, #0]
+2000056c:	b2d1      	uxtb	r1, r2
+2000056e:	687a      	ldr	r2, [r7, #4]
+20000570:	4413      	add	r3, r2
+20000572:	460a      	mov	r2, r1
+20000574:	741a      	strb	r2, [r3, #16]
+20000576:	687b      	ldr	r3, [r7, #4]
+20000578:	689b      	ldr	r3, [r3, #8]
+2000057a:	1c5a      	adds	r2, r3, #1
+2000057c:	687b      	ldr	r3, [r7, #4]
+2000057e:	609a      	str	r2, [r3, #8]
+20000580:	e093      	b.n	200006aa <reader+0x422>
     case '9': self->buf[self->len] = c; self->len++; return;
-20000580:	687b      	ldr	r3, [r7, #4]
-20000582:	689b      	ldr	r3, [r3, #8]
-20000584:	683a      	ldr	r2, [r7, #0]
-20000586:	b2d1      	uxtb	r1, r2
-20000588:	687a      	ldr	r2, [r7, #4]
-2000058a:	4413      	add	r3, r2
-2000058c:	460a      	mov	r2, r1
-2000058e:	741a      	strb	r2, [r3, #16]
-20000590:	687b      	ldr	r3, [r7, #4]
-20000592:	689b      	ldr	r3, [r3, #8]
-20000594:	1c5a      	adds	r2, r3, #1
-20000596:	687b      	ldr	r3, [r7, #4]
-20000598:	609a      	str	r2, [r3, #8]
-2000059a:	e086      	b.n	200006aa <reader+0x422>
+20000582:	687b      	ldr	r3, [r7, #4]
+20000584:	689b      	ldr	r3, [r3, #8]
+20000586:	683a      	ldr	r2, [r7, #0]
+20000588:	b2d1      	uxtb	r1, r2
+2000058a:	687a      	ldr	r2, [r7, #4]
+2000058c:	4413      	add	r3, r2
+2000058e:	460a      	mov	r2, r1
+20000590:	741a      	strb	r2, [r3, #16]
+20000592:	687b      	ldr	r3, [r7, #4]
+20000594:	689b      	ldr	r3, [r3, #8]
+20000596:	1c5a      	adds	r2, r3, #1
+20000598:	687b      	ldr	r3, [r7, #4]
+2000059a:	609a      	str	r2, [r3, #8]
+2000059c:	e085      	b.n	200006aa <reader+0x422>
     case '-': self->buf[self->len] = c; self->len++; return;
-2000059c:	687b      	ldr	r3, [r7, #4]
-2000059e:	689b      	ldr	r3, [r3, #8]
-200005a0:	683a      	ldr	r2, [r7, #0]
-200005a2:	b2d1      	uxtb	r1, r2
-200005a4:	687a      	ldr	r2, [r7, #4]
-200005a6:	4413      	add	r3, r2
-200005a8:	460a      	mov	r2, r1
-200005aa:	741a      	strb	r2, [r3, #16]
-200005ac:	687b      	ldr	r3, [r7, #4]
-200005ae:	689b      	ldr	r3, [r3, #8]
-200005b0:	1c5a      	adds	r2, r3, #1
-200005b2:	687b      	ldr	r3, [r7, #4]
-200005b4:	609a      	str	r2, [r3, #8]
-200005b6:	e078      	b.n	200006aa <reader+0x422>
+2000059e:	687b      	ldr	r3, [r7, #4]
+200005a0:	689b      	ldr	r3, [r3, #8]
+200005a2:	683a      	ldr	r2, [r7, #0]
+200005a4:	b2d1      	uxtb	r1, r2
+200005a6:	687a      	ldr	r2, [r7, #4]
+200005a8:	4413      	add	r3, r2
+200005aa:	460a      	mov	r2, r1
+200005ac:	741a      	strb	r2, [r3, #16]
+200005ae:	687b      	ldr	r3, [r7, #4]
+200005b0:	689b      	ldr	r3, [r3, #8]
+200005b2:	1c5a      	adds	r2, r3, #1
+200005b4:	687b      	ldr	r3, [r7, #4]
+200005b6:	609a      	str	r2, [r3, #8]
+200005b8:	e077      	b.n	200006aa <reader+0x422>
     case 'k':
       self->buf[self->len] = '\0';
-200005b8:	687b      	ldr	r3, [r7, #4]
-200005ba:	689b      	ldr	r3, [r3, #8]
-200005bc:	687a      	ldr	r2, [r7, #4]
-200005be:	4413      	add	r3, r2
-200005c0:	2200      	movs	r2, #0
-200005c2:	741a      	strb	r2, [r3, #16]
+200005ba:	687b      	ldr	r3, [r7, #4]
+200005bc:	689b      	ldr	r3, [r3, #8]
+200005be:	687a      	ldr	r2, [r7, #4]
+200005c0:	4413      	add	r3, r2
+200005c2:	2200      	movs	r2, #0
+200005c4:	741a      	strb	r2, [r3, #16]
       int key = atoi(self->buf);
-200005c4:	687b      	ldr	r3, [r7, #4]
-200005c6:	3310      	adds	r3, #16
-200005c8:	4618      	mov	r0, r3
-200005ca:	f007 fb61 	bl	20007c90 <atoi>
-200005ce:	60b8      	str	r0, [r7, #8]
+200005c6:	687b      	ldr	r3, [r7, #4]
+200005c8:	3310      	adds	r3, #16
+200005ca:	4618      	mov	r0, r3
+200005cc:	f007 fb60 	bl	20007c90 <atoi>
+200005d0:	60b8      	str	r0, [r7, #8]
       self->len = 0;
-200005d0:	687b      	ldr	r3, [r7, #4]
-200005d2:	2200      	movs	r2, #0
-200005d4:	609a      	str	r2, [r3, #8]
+200005d2:	687b      	ldr	r3, [r7, #4]
+200005d4:	2200      	movs	r2, #0
+200005d6:	609a      	str	r2, [r3, #8]
       if (key <= 5 && key >= -5) {
-200005d6:	68bb      	ldr	r3, [r7, #8]
-200005d8:	2b05      	cmp	r3, #5
-200005da:	dc11      	bgt.n	20000600 <reader+0x378>
-200005dc:	68bb      	ldr	r3, [r7, #8]
-200005de:	f113 0f05 	cmn.w	r3, #5
-200005e2:	db0d      	blt.n	20000600 <reader+0x378>
-        CanSendMsg(MSG_NEW_KEY, key); 
-200005e4:	68b9      	ldr	r1, [r7, #8]
-200005e6:	2006      	movs	r0, #6
-200005e8:	f7ff fd33 	bl	20000052 <CanSendMsg>
+200005d8:	68bb      	ldr	r3, [r7, #8]
+200005da:	2b05      	cmp	r3, #5
+200005dc:	dc11      	bgt.n	20000602 <reader+0x37a>
+200005de:	68bb      	ldr	r3, [r7, #8]
+200005e0:	f113 0f05 	cmn.w	r3, #5
+200005e4:	db0d      	blt.n	20000602 <reader+0x37a>
+        CANSendMsg(MSG_NEW_KEY, key); 
+200005e6:	68b9      	ldr	r1, [r7, #8]
+200005e8:	2006      	movs	r0, #6
+200005ea:	f7ff fd32 	bl	20000052 <CANSendMsg>
         if (self->conductor) SYNC(&music, MusicSetKey, key);
-200005ec:	687b      	ldr	r3, [r7, #4]
-200005ee:	68db      	ldr	r3, [r3, #12]
-200005f0:	2b00      	cmp	r3, #0
-200005f2:	d059      	beq.n	200006a8 <reader+0x420>
-200005f4:	68ba      	ldr	r2, [r7, #8]
-200005f6:	4910      	ldr	r1, [pc, #64]	@ (20000638 <reader+0x3b0>)
-200005f8:	4806      	ldr	r0, [pc, #24]	@ (20000614 <reader+0x38c>)
-200005fa:	f001 f9df 	bl	200019bc <sync>
+200005ee:	687b      	ldr	r3, [r7, #4]
+200005f0:	68db      	ldr	r3, [r3, #12]
+200005f2:	2b00      	cmp	r3, #0
+200005f4:	d058      	beq.n	200006a8 <reader+0x420>
+200005f6:	68ba      	ldr	r2, [r7, #8]
+200005f8:	490f      	ldr	r1, [pc, #60]	@ (20000638 <reader+0x3b0>)
+200005fa:	4806      	ldr	r0, [pc, #24]	@ (20000614 <reader+0x38c>)
+200005fc:	f001 f9de 	bl	200019bc <sync>
         break;
-200005fe:	e053      	b.n	200006a8 <reader+0x420>
+20000600:	e052      	b.n	200006a8 <reader+0x420>
       }
       else {
         SCI_WRITE(&sci0, "Input key not allowed! >:(\n");
-20000600:	4b0e      	ldr	r3, [pc, #56]	@ (2000063c <reader+0x3b4>)
-20000602:	461a      	mov	r2, r3
-20000604:	4909      	ldr	r1, [pc, #36]	@ (2000062c <reader+0x3a4>)
-20000606:	480a      	ldr	r0, [pc, #40]	@ (20000630 <reader+0x3a8>)
-20000608:	f001 f9d8 	bl	200019bc <sync>
+20000602:	4b0e      	ldr	r3, [pc, #56]	@ (2000063c <reader+0x3b4>)
+20000604:	461a      	mov	r2, r3
+20000606:	4909      	ldr	r1, [pc, #36]	@ (2000062c <reader+0x3a4>)
+20000608:	4809      	ldr	r0, [pc, #36]	@ (20000630 <reader+0x3a8>)
+2000060a:	f001 f9d7 	bl	200019bc <sync>
         break;
-2000060c:	e04d      	b.n	200006aa <reader+0x422>
-2000060e:	bf00      	nop
+2000060e:	e04c      	b.n	200006aa <reader+0x422>
 20000610:	20000a15 	.word	0x20000a15
 20000614:	20009040 	.word	0x20009040
 20000618:	20000a71 	.word	0x20000a71
@@ -749,10 +749,10 @@ void reader(App* self, int c) {
 20000664:	68fb      	ldr	r3, [r7, #12]
 20000666:	2b3b      	cmp	r3, #59	@ 0x3b
 20000668:	dd0d      	ble.n	20000686 <reader+0x3fe>
-        CanSendMsg(MSG_NEW_TEMPO, tempo); 
+        CANSendMsg(MSG_NEW_TEMPO, tempo); 
 2000066a:	68f9      	ldr	r1, [r7, #12]
 2000066c:	2005      	movs	r0, #5
-2000066e:	f7ff fcf0 	bl	20000052 <CanSendMsg>
+2000066e:	f7ff fcf0 	bl	20000052 <CANSendMsg>
         if (self->conductor) {
 20000672:	687b      	ldr	r3, [r7, #4]
 20000674:	68db      	ldr	r3, [r3, #12]
@@ -775,19 +775,19 @@ void reader(App* self, int c) {
 2000068e:	f001 f995 	bl	200019bc <sync>
         break;
 20000692:	e00a      	b.n	200006aa <reader+0x422>
-    case 'p': CanSendMsg(MSG_START_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
+    case 'p': CANSendMsg(MSG_START_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicPlayBJ, ARG_UNUSED); break;
 20000694:	bf00      	nop
 20000696:	e008      	b.n	200006aa <reader+0x422>
-    case 's': CanSendMsg(MSG_STOP_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicStopBJ, ARG_UNUSED); break;
+    case 's': CANSendMsg(MSG_STOP_BJ, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicStopBJ, ARG_UNUSED); break;
 20000698:	bf00      	nop
 2000069a:	e006      	b.n	200006aa <reader+0x422>
-    case ',': CanSendMsg(MSG_VOLUME_UP, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
+    case ',': CANSendMsg(MSG_VOLUME_UP, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicIncreaseVolume, ARG_UNUSED); break;
 2000069c:	bf00      	nop
 2000069e:	e004      	b.n	200006aa <reader+0x422>
-    case '.': CanSendMsg(MSG_VOLUME_DOWN, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
+    case '.': CANSendMsg(MSG_VOLUME_DOWN, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicDecreaseVolume, ARG_UNUSED); break;
 200006a0:	bf00      	nop
 200006a2:	e002      	b.n	200006aa <reader+0x422>
-    case 'm': CanSendMsg(MSG_MUTE_UNMUTE, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
+    case 'm': CANSendMsg(MSG_MUTE_UNMUTE, ARG_UNUSED); if (self->conductor) SYNC(&music, MusicMuteUnmute, ARG_UNUSED); break;
 200006a4:	bf00      	nop
 200006a6:	e000      	b.n	200006aa <reader+0x422>
         break;
@@ -1679,7 +1679,6 @@ void buttonEvent(Tempo* self, int unused) {
 20000d2c:	483b      	ldr	r0, [pc, #236]	@ (20000e1c <buttonEvent+0x15c>)
 20000d2e:	f000 fe45 	bl	200019bc <sync>
 20000d32:	e064      	b.n	20000dfe <buttonEvent+0x13e>
-
     }
     else {
         //pressed

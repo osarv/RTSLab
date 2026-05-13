@@ -69,7 +69,6 @@ void buttonEvent(Tempo* self, int unused) {
         printWithIntArg("time held: %d ms\n", TOT_MS_OF(sample));
         self->mode = MODE_MOMENTARY;
         SCI_WRITE(&sci0, "leaving press and hold!\n");
-
     }
     else {
         //pressed
