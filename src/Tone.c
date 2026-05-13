@@ -17,11 +17,6 @@ void ToneGenerate(Tone* self, int unused) {
   SEND(self->period, self->period * 2, self, ToneGenerate, ARG_UNUSED);
 }
 
-void ToneFlip(Tone* self, int unused){
-  self->waveStatus ^= 1;
-  *DAC_TONE = self->waveStatus * self->amplitude;
-}
-
 void ToneSetPeriod(Tone* self, int period) {
   self->period = period;
 }
